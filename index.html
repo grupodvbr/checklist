@@ -3,192 +3,267 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checklist Diário • Funcionários & Cargos</title>
+<title>Checklist Diário • Login + Avisos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0f1116; --card:#141825; --line:#20263a; --text:#e8eaf0; --muted:#a9b1c6;
-    --brand:#22c55e; --brand2:#60a5fa; --danger:#ef4444;
+    --brand:#22c55e; --brand2:#60a5fa; --danger:#ef4444; --warn:#f59e0b;
   }
   *{box-sizing:border-box}
   body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
-  header{position:sticky; top:0; background:linear-gradient(180deg, rgba(20,24,37,.95), rgba(20,24,37,.75)); backdrop-filter: blur(8px); border-bottom:1px solid var(--line); z-index:10;}
+  header{position:sticky; top:0; background:linear-gradient(180deg, rgba(20,24,37,.95), rgba(20,24,37,.75)); backdrop-filter: blur(8px); border-bottom:1px solid var(--line); z-index:20;}
   .wrap{max-width:1000px; margin:0 auto; padding:16px;}
-  h1{font-size:20px; margin:8px 0 4px 0}
+  h1{font-size:20px; margin:8px 0 4px}
   .date{font-size:13px; color:var(--muted)}
-  .controls{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
-  select, input[type="text"]{background:#0b0f1a; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; outline:none}
+  .banner{background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.45); color:#fde68a; padding:10px 12px; border-radius:12px; margin-top:10px}
+  .banner ul{margin:6px 0 0 18px}
   main{max-width:1000px; margin:16px auto; padding:0 16px 80px}
   .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin:16px 0; box-shadow:0 12px 40px rgba(0,0,0,.25)}
   .card h2{margin:0 0 4px 0; font-size:16px}
   .sub{color:var(--muted); font-size:13px; margin-bottom:8px}
   .task{display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-top:1px dashed var(--line)}
   .task:first-child{border-top:0}
-  .task label{flex: 0 0 auto; display:inline-flex; gap:8px; align-items:center; cursor:pointer}
+  .task label{flex:0 0 auto; display:inline-flex; gap:8px; align-items:center; cursor:pointer}
   .task input[type="checkbox"]{width:18px; height:18px}
   .task .title{font-weight:600}
   .obs{flex:1; display:flex; gap:8px}
-  .obs input{flex:1}
-  .savebar{position:fixed; bottom:0; left:0; right:0; background:linear-gradient(0deg, rgba(20,24,37,1), rgba(20,24,37,.85)); border-top:1px solid var(--line); padding:12px; display:flex; gap:10px; justify-content:center}
+  .obs input{flex:1; background:#0b0f1a; border:1px solid var(--line); border-radius:10px; padding:8px; color:var(--text)}
+  .savebar{position:fixed; bottom:0; left:0; right:0; background:linear-gradient(0deg, rgba(20,24,37,1), rgba(20,24,37,.85)); border-top:1px solid var(--line); padding:12px; display:flex; gap:10px; justify-content:center; z-index:15}
   button{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#020617; font-weight:700; border:0; border-radius:12px; padding:12px 16px; cursor:pointer}
   .ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
   .pill{padding:6px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-size:12px}
   .empty{color:var(--muted); text-align:center; padding:24px}
+  /* MODAL LOGIN */
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index:50}
+  .modal.hidden{display:none}
+  .dialog{width:100%; max-width:380px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px}
+  .dialog h3{margin:0 0 10px; font-size:18px}
+  .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
+  .field input{background:#0b0f1a; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; outline:none}
+  .err{color:#fecaca; font-size:12px; min-height:16px}
+  .topbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .topbar .who{margin-left:auto; font-size:12px; color:var(--muted)}
+  .link{color:#93c5fd; text-decoration:underline; cursor:pointer}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
-    <h1>Checklist Diário</h1>
+    <div class="topbar">
+      <h1>Checklist Diário</h1>
+      <span class="who" id="whoSpan"></span>
+    </div>
     <div class="date" id="dateSpan">Carregando…</div>
-    <div class="controls">
-      <select id="cargoFilter">
-        <option value="">Todos os cargos</option>
-      </select>
-      <select id="funcFilter">
-        <option value="">Todos os funcionários</option>
-      </select>
-      <span class="pill" id="countSpan">0 tarefas</span>
+    <div class="banner" id="banner" style="display:none">
+      <strong>Avisos importantes</strong>
+      <ul id="bannerList"></ul>
     </div>
   </div>
 </header>
 
 <main id="content">
-  <div class="empty">Carregando tarefas…</div>
+  <div class="empty">Carregando…</div>
 </main>
 
 <div class="savebar">
-  <button id="saveBtn">Salvar alterações</button>
-  <button class="ghost" id="reloadBtn">Recarregar</button>
+  <button id="logoutBtn" class="ghost">Sair</button>
+  <span class="pill" id="countSpan">0 tarefas</span>
+</div>
+
+<!-- Modal de Login -->
+<div class="modal hidden" id="loginModal">
+  <div class="dialog">
+    <h3>Acesso ao Checklist</h3>
+    <div class="field">
+      <label>Usuário</label>
+      <input id="userInput" autocomplete="username" placeholder="ex: joao">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input id="passInput" type="password" autocomplete="current-password" placeholder="••••">
+    </div>
+    <div class="err" id="errMsg"></div>
+    <div style="display:flex; gap:8px; justify-content:flex-end">
+      <button id="enterBtn">Entrar</button>
+    </div>
+  </div>
 </div>
 
 <script>
   // ======= CONFIG =======
-  const API_URL = 'https://script.google.com/macros/s/AKfycbyLAzlaP4AHoRzu4aww2eiDC9WsdbRXF5TxiMIgUjkUSBcwoEt_QpcG4I4hlmWqmvI5/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxDrnYOppFFJ2L7w0oEA-fT7toAvxlNMh4M9kWxtJ6x4KT8nird3VTUP2gqKFg17w4/exec';
 
-  let bootstrap = null; // {date, funcionarios:[{FuncionarioID, FuncionarioNome, Cargo, tasks:[{TarefaID,Tarefa,Status,Observacao}]}]}
-  let currentView = [];
+  // ======= STATE =======
+  let session = null; // {FuncionarioID, FuncionarioNome, Cargo}
+  let tasks = [];     // array plano de tarefas do usuário
+  const el = s => document.querySelector(s);
 
-  const el = sel => document.querySelector(sel);
-  const content = el('#content');
-  const dateSpan = el('#dateSpan');
-  const cargoFilter = el('#cargoFilter');
-  const funcFilter = el('#funcFilter');
-  const countSpan = el('#countSpan');
-  const saveBtn = el('#saveBtn');
-  const reloadBtn = el('#reloadBtn');
-
-  async function load(){
-    content.innerHTML = '<div class="empty">Carregando tarefas…</div>';
-    const res = await fetch(API_URL+'?action=bootstrap');
-    const json = await res.json();
-    bootstrap = json;
-    dateSpan.textContent = 'Data: ' + json.date;
-    renderFilters(json.funcionarios);
-    render(json.funcionarios);
+  // ======= LOGIN FLOW =======
+  function loadSession(){
+    try{
+      const raw = localStorage.getItem('check_session');
+      if(!raw) return null;
+      const s = JSON.parse(raw);
+      if(!s || !s.FuncionarioID) return null;
+      return s;
+    }catch(_){ return null; }
+  }
+  function saveSession(s){
+    localStorage.setItem('check_session', JSON.stringify(s));
+  }
+  function clearSession(){
+    localStorage.removeItem('check_session');
   }
 
-  function renderFilters(funcs){
-    // cargos únicos
-    const cargos = Array.from(new Set(funcs.map(f => f.Cargo))).sort();
-    cargoFilter.innerHTML = '<option value="">Todos os cargos</option>' +
-      cargos.map(c=>`<option>${c}</option>`).join('');
-
-    // funcionarios
-    const nomes = funcs.map(f => ({id:f.FuncionarioID, nome:f.FuncionarioNome})).sort((a,b)=>a.nome.localeCompare(b.nome));
-    funcFilter.innerHTML = '<option value="">Todos os funcionários</option>' +
-      nomes.map(n=>`<option value="${n.id}">${n.nome}</option>`).join('');
-
-    cargoFilter.onchange = applyFilters;
-    funcFilter.onchange = applyFilters;
+  function showLoginModal(show=true){
+    el('#loginModal').classList.toggle('hidden', !show);
   }
-
-  function applyFilters(){
-    const c = cargoFilter.value;
-    const f = funcFilter.value;
-    let list = bootstrap.funcionarios.slice();
-    if(c) list = list.filter(x => x.Cargo === c);
-    if(f) list = list.filter(x => String(x.FuncionarioID) === String(f));
-    render(list);
-  }
-
-  function render(funcs){
-    currentView = funcs;
-    if(!funcs.length){
-      content.innerHTML = '<div class="empty">Nenhum resultado com os filtros selecionados.</div>';
-      countSpan.textContent = '0 tarefas';
-      return;
+  async function doLogin(){
+    const usuario = el('#userInput').value.trim();
+    const senha = el('#passInput').value.trim();
+    el('#errMsg').textContent = '';
+    if(!usuario || !senha){ el('#errMsg').textContent = 'Preencha usuário e senha.'; return; }
+    try{
+      const res = await fetch(API_URL+`?action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`);
+      const out = await res.json();
+      if(!out.ok) throw new Error(out.error || 'Falha no login');
+      session = out.user;
+      saveSession(session);
+      showLoginModal(false);
+      bootstrap();
+    }catch(err){
+      el('#errMsg').textContent = err.message;
     }
-    let totalTasks = 0;
-    content.innerHTML = funcs.map(f=>{
-      const tasksHtml = f.tasks.map((t, idx)=>{
-        totalTasks++;
-        const cid = `c_${f.FuncionarioID}_${t.TarefaID}`;
-        const oid = `o_${f.FuncionarioID}_${t.TarefaID}`;
-        return `
-          <div class="task">
-            <label>
-              <input type="checkbox" id="${cid}" ${t.Status ? 'checked':''} />
-              <span class="title">${t.Tarefa}</span>
-            </label>
-            <div class="obs">
-              <input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}">
-            </div>
-          </div>
-        `;
-      }).join('');
-      return `
-        <section class="card">
-          <h2>${f.FuncionarioNome}</h2>
-          <div class="sub">Cargo: ${f.Cargo} • ${f.tasks.length} tarefas</div>
-          ${tasksHtml}
-        </section>
-      `;
-    }).join('');
-    countSpan.textContent = totalTasks + ' tarefas';
   }
 
-  async function save(){
-    if(!currentView.length){ alert('Nada para salvar.'); return; }
-    const updates = [];
-    currentView.forEach(f=>{
-      f.tasks.forEach(t=>{
-        const cid = `#c_${f.FuncionarioID}_${t.TarefaID}`;
-        const oid = `#o_${f.FuncionarioID}_${t.TarefaID}`;
-        const status = el(cid).checked;
-        const obs = el(oid).value || '';
-        updates.push({
-          FuncionarioID: f.FuncionarioID,
-          TarefaID: t.TarefaID,
-          Status: status,
-          Observacao: obs,
-          Usuario: 'Checklist Web'
-        });
+  // ======= DATA LOAD =======
+  async function loadNotices(){
+    try{
+      const r = await fetch(API_URL+'?action=notices');
+      const j = await r.json();
+      if(j.ok && Array.isArray(j.notices) && j.notices.length){
+        el('#bannerList').innerHTML = j.notices.map(m=>`<li>${m.replace(/</g,'&lt;')}</li>`).join('');
+        el('#banner').style.display = '';
+      } else {
+        el('#banner').style.display = 'none';
+      }
+    }catch(_){}
+  }
+
+  async function bootstrap(){
+    if(!session){ contentState('Faça login para continuar.'); showLoginModal(true); return; }
+    el('#whoSpan').textContent = `${session.FuncionarioNome} • ${session.Cargo}`;
+    el('#dateSpan').textContent = 'Carregando…';
+
+    await loadNotices();
+
+    const res = await fetch(API_URL+`?action=bootstrap&userId=${encodeURIComponent(session.FuncionarioID)}`);
+    const json = await res.json();
+    if(!json.ok){ contentState('Erro ao carregar.'); return; }
+    el('#dateSpan').textContent = 'Data: ' + json.date;
+
+    // json.funcionarios len será 1 (somente o usuário)
+    const f = (json.funcionarios && json.funcionarios[0]) || {tasks:[]};
+    tasks = f.tasks || [];
+    render(tasks);
+  }
+
+  // ======= RENDER =======
+  const content = el('#content');
+  const countSpan = el('#countSpan');
+
+  function contentState(msg){
+    content.innerHTML = `<div class="empty">${msg}</div>`;
+    countSpan.textContent = '0 tarefas';
+  }
+
+  function render(list){
+    if(!list.length){ contentState('Nenhuma tarefa para hoje.'); return; }
+    countSpan.textContent = list.length + ' tarefas';
+
+    content.innerHTML = `
+      <section class="card">
+        <h2>Minhas Tarefas</h2>
+        <div class="sub">Marque para concluir. Salva automaticamente.</div>
+        ${list.map(t => {
+          const cid = `c_${t.TarefaID}`;
+          const oid = `o_${t.TarefaID}`;
+          return `
+            <div class="task">
+              <label>
+                <input type="checkbox" id="${cid}" ${t.Status ? 'checked':''} />
+                <span class="title">${t.Tarefa}</span>
+              </label>
+              <div class="obs">
+                <input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}">
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </section>
+    `;
+
+    // bind events – check instantâneo
+    list.forEach(t=>{
+      const cid = el(`#c_${t.TarefaID}`);
+      const oid = el(`#o_${t.TarefaID}`);
+      cid.addEventListener('change', async (ev)=>{
+        const done = ev.target.checked;
+        const obs = oid.value || '';
+        await toggleTask(t.TarefaID, done, obs);
+      });
+      oid.addEventListener('change', async ()=>{
+        // atualizar observação sem mexer no check
+        await toggleTask(t.TarefaID, el(`#c_${t.TarefaID}`).checked, oid.value || '');
       });
     });
+  }
 
-    saveBtn.disabled = true; saveBtn.textContent = 'Salvando…';
+  // ======= WRITE (toggle imediato) =======
+  async function toggleTask(tarefaId, done, obs){
     try{
       const res = await fetch(API_URL, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'submit', updates })
+        body: JSON.stringify({
+          action:'toggle',
+          FuncionarioID: session.FuncionarioID,
+          TarefaID: tarefaId,
+          done: !!done,
+          usuario: session.FuncionarioNome,
+          obs: obs || ''
+        })
       });
       const out = await res.json();
-      if(out.error){ throw new Error(out.error); }
-      saveBtn.textContent = 'Salvo!';
-      setTimeout(()=>{ saveBtn.textContent='Salvar alterações'; saveBtn.disabled=false; }, 1200);
-    } catch(err){
-      alert('Erro ao salvar: ' + err.message);
-      saveBtn.disabled = false; saveBtn.textContent = 'Salvar alterações';
+      if(!out.ok) throw new Error(out.error||'Falha ao salvar');
+      // Atualiza memória local
+      const idx = tasks.findIndex(x=>x.TarefaID===tarefaId);
+      if(idx>-1){ tasks[idx].Status = !!done; tasks[idx].Observacao = obs || ''; }
+    }catch(err){
+      alert('Erro ao salvar: '+err.message);
+      // reverte checkbox visual se deu erro
+      const c = el(`#c_${tarefaId}`); if(c) c.checked = !done;
     }
   }
 
-  reloadBtn.onclick = load;
-  saveBtn.onclick = save;
+  // ======= BOOT =======
+  const loginSaved = loadSession();
+  if(loginSaved){ session = loginSaved; showLoginModal(false); bootstrap(); }
+  else { showLoginModal(true); }
 
-  load();
+  // botões
+  el('#enterBtn').onclick = doLogin;
+  el('#logoutBtn').onclick = ()=>{
+    clearSession();
+    session = null;
+    contentState('Sessão encerrada.');
+    showLoginModal(true);
+  };
+
+  // Enter para enviar login
+  el('#passInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') doLogin(); });
 </script>
 </body>
 </html>
