@@ -2,57 +2,70 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Checklist Diário • Login + Avisos</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Checklist • Empresas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1116; --card:#141825; --line:#20263a; --text:#e8eaf0; --muted:#a9b1c6;
+    --bg:#0c1220; --card:#0f1628; --muted:#9aa4b2; --text:#e9edf5; --line:#1e2a44;
     --brand:#22c55e; --brand2:#60a5fa; --danger:#ef4444; --warn:#f59e0b;
+    --chip:#0a1020; --good:#16a34a;
   }
   *{box-sizing:border-box}
-  body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
-  header{position:sticky; top:0; background:linear-gradient(180deg, rgba(20,24,37,.95), rgba(20,24,37,.75)); backdrop-filter: blur(8px); border-bottom:1px solid var(--line); z-index:20;}
-  .wrap{max-width:1000px; margin:0 auto; padding:16px;}
-  h1{font-size:20px; margin:8px 0 4px}
-  .date{font-size:13px; color:var(--muted)}
-  .banner{background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.45); color:#fde68a; padding:10px 12px; border-radius:12px; margin-top:10px}
+  body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
+  header{position:sticky; top:0; z-index:30; background:linear-gradient(180deg, rgba(15,22,40,.98), rgba(15,22,40,.8)); border-bottom:1px solid var(--line); backdrop-filter: blur(8px);}
+  .wrap{max-width:980px; padding:14px 16px; margin:0 auto;}
+  .topbar{display:flex; align-items:center; gap:12px}
+  .brand{font-weight:800; font-size:18px; letter-spacing:.2px}
+  .who{margin-left:auto; font-size:12px; color:var(--muted)}
+  .date{font-size:12px; color:var(--muted); margin-top:4px}
+  .banner{margin-top:10px; border:1px solid rgba(245,158,11,.5); background:rgba(245,158,11,.08); padding:10px 12px; border-radius:14px}
+  .banner strong{color:#fde68a}
   .banner ul{margin:6px 0 0 18px}
-  main{max-width:1000px; margin:16px auto; padding:0 16px 80px}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; margin:16px 0; box-shadow:0 12px 40px rgba(0,0,0,.25)}
-  .card h2{margin:0 0 4px 0; font-size:16px}
-  .sub{color:var(--muted); font-size:13px; margin-bottom:8px}
-  .task{display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-top:1px dashed var(--line)}
-  .task:first-child{border-top:0}
-  .task label{flex:0 0 auto; display:inline-flex; gap:8px; align-items:center; cursor:pointer}
-  .task input[type="checkbox"]{width:18px; height:18px}
-  .task .title{font-weight:600}
-  .obs{flex:1; display:flex; gap:8px}
-  .obs input{flex:1; background:#0b0f1a; border:1px solid var(--line); border-radius:10px; padding:8px; color:var(--text)}
-  .savebar{position:fixed; bottom:0; left:0; right:0; background:linear-gradient(0deg, rgba(20,24,37,1), rgba(20,24,37,.85)); border-top:1px solid var(--line); padding:12px; display:flex; gap:10px; justify-content:center; z-index:15}
-  button{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#020617; font-weight:700; border:0; border-radius:12px; padding:12px 16px; cursor:pointer}
-  .ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
-  .pill{padding:6px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-size:12px}
-  .empty{color:var(--muted); text-align:center; padding:24px}
-  /* MODAL LOGIN */
-  .modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index:50}
+
+  main{max-width:980px; margin:14px auto 80px; padding:0 16px}
+  .kpis{display:grid; grid-template-columns:1fr; gap:10px}
+  .kpi{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px}
+  .kpi h3{margin:0 0 6px; font-size:14px; color:var(--muted); font-weight:600}
+  .big{font-size:22px; font-weight:800}
+  .progress{height:10px; background:#0a1120; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px}
+  .progress > div{height:100%; background:linear-gradient(90deg,var(--brand),var(--brand2)); width:0%}
+
+  .section{margin-top:14px}
+  .section h2{font-size:15px; margin:0 0 8px; color:var(--muted); font-weight:700; display:flex; align-items:center; gap:8px}
+  .pill{font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--chip)}
+  .list{display:flex; flex-direction:column; gap:10px}
+  .task{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; display:flex; gap:10px; align-items:flex-start}
+  .task input[type=checkbox]{width:20px; height:20px; flex:0 0 auto}
+  .title{font-weight:700}
+  .obs{margin-top:6px}
+  .obs input{width:100%; background:#0a1020; border:1px solid var(--line); border-radius:10px; padding:8px; color:var(--text)}
+  .ghost{background:transparent; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px}
+  .toolbar{display:flex; gap:8px; align-items:center; margin-top:8px}
+
+  .fab{position:fixed; right:16px; bottom:16px; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#051016; border:0; border-radius:999px; padding:12px 16px; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .empty{color:var(--muted); text-align:center; padding:18px}
+
+  /* Modal */
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:60}
   .modal.hidden{display:none}
-  .dialog{width:100%; max-width:380px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px}
+  .dialog{width:100%; max-width:380px; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px}
   .dialog h3{margin:0 0 10px; font-size:18px}
   .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
-  .field input{background:#0b0f1a; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px; outline:none}
+  .field select,.field input{background:#0a1020; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px}
   .err{color:#fecaca; font-size:12px; min-height:16px}
-  .topbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .topbar .who{margin-left:auto; font-size:12px; color:var(--muted)}
-  .link{color:#93c5fd; text-decoration:underline; cursor:pointer}
+
+  @media(min-width:720px){
+    .kpis{grid-template-columns:repeat(4,1fr)}
+  }
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <div class="topbar">
-      <h1>Checklist Diário</h1>
+      <div class="brand">Checklist • Empresas</div>
       <span class="who" id="whoSpan"></span>
     </div>
     <div class="date" id="dateSpan">Carregando…</div>
@@ -63,14 +76,26 @@
   </div>
 </header>
 
-<main id="content">
-  <div class="empty">Carregando…</div>
+<main>
+  <section class="kpis">
+    <div class="kpi"><h3>Total</h3><div class="big" id="kpiTotal">0</div></div>
+    <div class="kpi"><h3>Concluídas</h3><div class="big" id="kpiDone">0</div></div>
+    <div class="kpi"><h3>Pendentes</h3><div class="big" id="kpiPend">0</div></div>
+    <div class="kpi"><h3>Conclusão</h3><div class="big" id="kpiPct">0%</div><div class="progress"><div id="kpiBar"></div></div></div>
+  </section>
+
+  <section class="section">
+    <h2>Pendentes <span class="pill" id="countPend">0</span></h2>
+    <div class="list" id="listPend"><div class="empty">Carregando…</div></div>
+  </section>
+
+  <section class="section">
+    <h2>Concluídas <span class="pill" id="countDone">0</span></h2>
+    <div class="list" id="listDone"><div class="empty">Carregando…</div></div>
+  </section>
 </main>
 
-<div class="savebar">
-  <button id="logoutBtn" class="ghost">Sair</button>
-  <span class="pill" id="countSpan">0 tarefas</span>
-</div>
+<button class="fab ghost" id="logoutBtn">Sair</button>
 
 <!-- Modal de Login -->
 <div class="modal hidden" id="loginModal">
@@ -78,7 +103,7 @@
     <h3>Acesso ao Checklist</h3>
     <div class="field">
       <label>Usuário</label>
-      <input id="userInput" autocomplete="username" placeholder="ex: joao">
+      <select id="userSelect"><option value="">Carregando…</option></select>
     </div>
     <div class="field">
       <label>Senha</label>
@@ -86,145 +111,178 @@
     </div>
     <div class="err" id="errMsg"></div>
     <div style="display:flex; gap:8px; justify-content:flex-end">
-      <button id="enterBtn">Entrar</button>
+      <button class="ghost" id="enterBtn">Entrar</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ======= CONFIG =======
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxDrnYOppFFJ2L7w0oEA-fT7toAvxlNMh4M9kWxtJ6x4KT8nird3VTUP2gqKFg17w4/exec';
+  // ===== CONFIG =====
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz8FyNkIXxoa9HcdQgwh8-d2KPNAap5ZcdBOap-rmZ3tggHojSyyicDgOMAshp-X0s/exec';
 
-  // ======= STATE =======
+  // ===== STATE =====
   let session = null; // {FuncionarioID, FuncionarioNome, Cargo}
-  let tasks = [];     // array plano de tarefas do usuário
+  let tasks = [];     // [{TarefaID,Tarefa,Status,Observacao}]
   const el = s => document.querySelector(s);
 
-  // ======= LOGIN FLOW =======
-  function loadSession(){
-    try{
-      const raw = localStorage.getItem('check_session');
-      if(!raw) return null;
-      const s = JSON.parse(raw);
-      if(!s || !s.FuncionarioID) return null;
-      return s;
-    }catch(_){ return null; }
-  }
-  function saveSession(s){
-    localStorage.setItem('check_session', JSON.stringify(s));
-  }
-  function clearSession(){
-    localStorage.removeItem('check_session');
-  }
+  // ===== SESSION STORAGE =====
+  function loadSession(){ try{ return JSON.parse(localStorage.getItem('check_session')) || null; }catch{ return null; } }
+  function saveSession(s){ localStorage.setItem('check_session', JSON.stringify(s)); }
+  function clearSession(){ localStorage.removeItem('check_session'); }
 
+  // ===== LOGIN UI =====
   function showLoginModal(show=true){
     el('#loginModal').classList.toggle('hidden', !show);
+    if(show){ loadUsersForLogin(); el('#passInput').value=''; el('#errMsg').textContent=''; }
+  }
+  async function loadUsersForLogin(){
+    const sel = el('#userSelect');
+    sel.innerHTML = `<option value="">Carregando…</option>`;
+    try{
+      const r = await fetch(API_URL+'?action=users');
+      const j = await r.json();
+      if(!j.ok) throw new Error('Falha ao carregar usuários');
+      window.__usersCache = j.users || [];
+      sel.innerHTML = `<option value="">Selecione seu nome</option>` +
+        (window.__usersCache)
+          .sort((a,b)=>a.FuncionarioNome.localeCompare(b.FuncionarioNome))
+          .map(u=>`<option value="${u.FuncionarioID}">${u.FuncionarioNome} • ${u.Cargo}</option>`)
+          .join('');
+    }catch{
+      sel.innerHTML = `<option value="">Erro ao carregar</option>`;
+    }
   }
   async function doLogin(){
-    const usuario = el('#userInput').value.trim();
+    const userId = el('#userSelect').value;
     const senha = el('#passInput').value.trim();
     el('#errMsg').textContent = '';
-    if(!usuario || !senha){ el('#errMsg').textContent = 'Preencha usuário e senha.'; return; }
+    if(!userId){ el('#errMsg').textContent = 'Selecione seu nome.'; return; }
+    if(!senha){ el('#errMsg').textContent = 'Informe a senha.'; return; }
+    const rec = (window.__usersCache||[]).find(u => String(u.FuncionarioID)===String(userId));
+    if(!rec){ el('#errMsg').textContent = 'Usuário não encontrado.'; return; }
     try{
-      const res = await fetch(API_URL+`?action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`);
+      const res = await fetch(API_URL+`?action=login&usuario=${encodeURIComponent(rec.Usuario)}&senha=${encodeURIComponent(senha)}`);
       const out = await res.json();
       if(!out.ok) throw new Error(out.error || 'Falha no login');
       session = out.user;
       saveSession(session);
       showLoginModal(false);
-      bootstrap();
-    }catch(err){
-      el('#errMsg').textContent = err.message;
-    }
+      loadAll();
+    }catch(err){ el('#errMsg').textContent = err.message; }
   }
 
-  // ======= DATA LOAD =======
+  // ===== LOAD =====
   async function loadNotices(){
     try{
       const r = await fetch(API_URL+'?action=notices');
       const j = await r.json();
-      if(j.ok && Array.isArray(j.notices) && j.notices.length){
+      if(j.ok && j.notices && j.notices.length){
         el('#bannerList').innerHTML = j.notices.map(m=>`<li>${m.replace(/</g,'&lt;')}</li>`).join('');
-        el('#banner').style.display = '';
-      } else {
-        el('#banner').style.display = 'none';
-      }
-    }catch(_){}
+        el('#banner').style.display='';
+      } else { el('#banner').style.display='none'; }
+    }catch{ el('#banner').style.display='none'; }
   }
-
-  async function bootstrap(){
-    if(!session){ contentState('Faça login para continuar.'); showLoginModal(true); return; }
+  async function loadAll(){
+    if(!session){ showLoginModal(true); return; }
     el('#whoSpan').textContent = `${session.FuncionarioNome} • ${session.Cargo}`;
-    el('#dateSpan').textContent = 'Carregando…';
-
     await loadNotices();
-
-    const res = await fetch(API_URL+`?action=bootstrap&userId=${encodeURIComponent(session.FuncionarioID)}`);
-    const json = await res.json();
-    if(!json.ok){ contentState('Erro ao carregar.'); return; }
-    el('#dateSpan').textContent = 'Data: ' + json.date;
-
-    // json.funcionarios len será 1 (somente o usuário)
-    const f = (json.funcionarios && json.funcionarios[0]) || {tasks:[]};
+    const r = await fetch(API_URL+`?action=bootstrap&userId=${encodeURIComponent(session.FuncionarioID)}`);
+    const j = await r.json();
+    if(!j.ok){ renderEmpty('Erro ao carregar.'); return; }
+    el('#dateSpan').textContent = 'Data: ' + j.date;
+    const f = (j.funcionarios && j.funcionarios[0]) || {tasks:[]};
     tasks = f.tasks || [];
-    render(tasks);
+    const metrics = j.metrics || {total:tasks.length, done:tasks.filter(t=>t.Status).length, pending:0, pct:0};
+    metrics.pending = metrics.total - metrics.done;
+    metrics.pct = metrics.total ? Math.round((metrics.done/metrics.total)*100) : 0;
+    render(tasks, metrics);
   }
 
-  // ======= RENDER =======
-  const content = el('#content');
-  const countSpan = el('#countSpan');
-
-  function contentState(msg){
-    content.innerHTML = `<div class="empty">${msg}</div>`;
-    countSpan.textContent = '0 tarefas';
+  // ===== RENDER =====
+  function renderEmpty(msg){
+    el('#listPend').innerHTML = `<div class="empty">${msg}</div>`;
+    el('#listDone').innerHTML = `<div class="empty">${msg}</div>`;
+    kpis({total:0,done:0,pending:0,pct:0});
   }
+  function kpis(m){
+    el('#kpiTotal').textContent = m.total;
+    el('#kpiDone').textContent = m.done;
+    el('#kpiPend').textContent = m.pending;
+    el('#kpiPct').textContent = `${m.pct}%`;
+    el('#kpiBar').style.width = `${m.pct}%`;
+  }
+  function render(list, m){
+    const pend = list.filter(t=>!t.Status);
+    const done = list.filter(t=>t.Status);
+    el('#countPend').textContent = pend.length;
+    el('#countDone').textContent = done.length;
+    kpis(m);
 
-  function render(list){
-    if(!list.length){ contentState('Nenhuma tarefa para hoje.'); return; }
-    countSpan.textContent = list.length + ' tarefas';
-
-    content.innerHTML = `
-      <section class="card">
-        <h2>Minhas Tarefas</h2>
-        <div class="sub">Marque para concluir. Salva automaticamente.</div>
-        ${list.map(t => {
-          const cid = `c_${t.TarefaID}`;
-          const oid = `o_${t.TarefaID}`;
-          return `
-            <div class="task">
-              <label>
-                <input type="checkbox" id="${cid}" ${t.Status ? 'checked':''} />
-                <span class="title">${t.Tarefa}</span>
-              </label>
-              <div class="obs">
-                <input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}">
-              </div>
+    const makeItem = (t) => {
+      const cid = `c_${t.TarefaID}`;
+      const oid = `o_${t.TarefaID}`;
+      return `
+        <div class="task">
+          <input type="checkbox" id="${cid}" ${t.Status?'checked':''}>
+          <div style="flex:1">
+            <div class="title">${t.Tarefa}</div>
+            <div class="obs">
+              <input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}">
             </div>
-          `;
-        }).join('')}
-      </section>
-    `;
+          </div>
+        </div>
+      `;
+    };
+    el('#listPend').innerHTML = pend.length ? pend.map(makeItem).join('') : `<div class="empty">Sem pendências 🎉</div>`;
+    el('#listDone').innerHTML = done.length ? done.map(makeItem).join('') : `<div class="empty">Nada concluído ainda.</div>`;
 
-    // bind events – check instantâneo
+    // binds
     list.forEach(t=>{
       const cid = el(`#c_${t.TarefaID}`);
       const oid = el(`#o_${t.TarefaID}`);
-      cid.addEventListener('change', async (ev)=>{
-        const done = ev.target.checked;
-        const obs = oid.value || '';
-        await toggleTask(t.TarefaID, done, obs);
+      cid?.addEventListener('change', async (ev)=>{
+        const checked = ev.target.checked;
+        const obs = oid?.value || '';
+        const ok = await toggleTask(t.TarefaID, checked, obs);
+        if(!ok){ ev.target.checked = !checked; return; }
+        // atualiza memória
+        t.Status = checked; t.Observacao = obs;
+        // re-render leve: apenas KPIs e contadores
+        const newPend = tasks.filter(x=>!x.Status).length;
+        const newDone = tasks.length - newPend;
+        const pct = tasks.length ? Math.round((newDone/tasks.length)*100) : 0;
+        kpis({total:tasks.length, done:newDone, pending:newPend, pct});
+        el('#countPend').textContent = newPend;
+        el('#countDone').textContent = newDone;
+        // mover o item entre listas sem recarregar tudo:
+        const itemHtml = cid.closest('.task').outerHTML;
+        if(checked){
+          // remove de pendentes
+          cid.closest('.task').remove();
+          // adiciona em concluídas
+          const listDone = el('#listDone');
+          if(listDone.querySelector('.empty')) listDone.innerHTML = '';
+          listDone.insertAdjacentHTML('afterbegin', itemHtml);
+        }else{
+          cid.closest('.task').remove();
+          const listPend = el('#listPend');
+          if(listPend.querySelector('.empty')) listPend.innerHTML = '';
+          listPend.insertAdjacentHTML('afterbegin', itemHtml);
+        }
       });
-      oid.addEventListener('change', async ()=>{
-        // atualizar observação sem mexer no check
-        await toggleTask(t.TarefaID, el(`#c_${t.TarefaID}`).checked, oid.value || '');
+      oid?.addEventListener('change', async ()=>{
+        const checked = !!el(`#c_${t.TarefaID}`)?.checked;
+        const obs = oid.value || '';
+        const ok = await toggleTask(t.TarefaID, checked, obs);
+        if(ok){ t.Observacao = obs; } // mantém memória
       });
     });
   }
 
-  // ======= WRITE (toggle imediato) =======
+  // ===== WRITE =====
   async function toggleTask(tarefaId, done, obs){
     try{
-      const res = await fetch(API_URL, {
+      const r = await fetch(API_URL, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -236,33 +294,23 @@
           obs: obs || ''
         })
       });
-      const out = await res.json();
-      if(!out.ok) throw new Error(out.error||'Falha ao salvar');
-      // Atualiza memória local
-      const idx = tasks.findIndex(x=>x.TarefaID===tarefaId);
-      if(idx>-1){ tasks[idx].Status = !!done; tasks[idx].Observacao = obs || ''; }
+      const j = await r.json();
+      if(!j.ok) throw new Error(j.error||'Falha ao salvar');
+      return true;
     }catch(err){
       alert('Erro ao salvar: '+err.message);
-      // reverte checkbox visual se deu erro
-      const c = el(`#c_${tarefaId}`); if(c) c.checked = !done;
+      return false;
     }
   }
 
-  // ======= BOOT =======
-  const loginSaved = loadSession();
-  if(loginSaved){ session = loginSaved; showLoginModal(false); bootstrap(); }
+  // ===== BOOT =====
+  const saved = loadSession();
+  if(saved){ session = saved; showLoginModal(false); loadAll(); }
   else { showLoginModal(true); }
 
-  // botões
+  // listeners
   el('#enterBtn').onclick = doLogin;
-  el('#logoutBtn').onclick = ()=>{
-    clearSession();
-    session = null;
-    contentState('Sessão encerrada.');
-    showLoginModal(true);
-  };
-
-  // Enter para enviar login
+  el('#logoutBtn').onclick = ()=>{ clearSession(); session=null; renderEmpty('Sessão encerrada.'); showLoginModal(true); };
   el('#passInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') doLogin(); });
 </script>
 </body>
