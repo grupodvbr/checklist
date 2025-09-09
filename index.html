@@ -42,12 +42,8 @@
   .obs{margin-top:6px}
   .obs input{width:100%; background:#0a1020; border:1px solid var(--line); border-radius:10px; padding:8px; color:var(--text)}
   .ghost{background:transparent; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px}
-  .toolbar{display:flex; gap:8px; align-items:center; margin-top:8px}
-
   .fab{position:fixed; right:16px; bottom:16px; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#051016; border:0; border-radius:999px; padding:12px 16px; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.35)}
   .empty{color:var(--muted); text-align:center; padding:18px}
-
-  /* Modal */
   .modal{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:60}
   .modal.hidden{display:none}
   .dialog{width:100%; max-width:380px; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px}
@@ -55,7 +51,6 @@
   .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
   .field select,.field input{background:#0a1020; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px}
   .err{color:#fecaca; font-size:12px; min-height:16px}
-
   @media(min-width:720px){
     .kpis{grid-template-columns:repeat(4,1fr)}
   }
@@ -121,8 +116,8 @@
   const API_URL = 'https://script.google.com/macros/s/AKfycbz8FyNkIXxoa9HcdQgwh8-d2KPNAap5ZcdBOap-rmZ3tggHojSyyicDgOMAshp-X0s/exec';
 
   // ===== STATE =====
-  let session = null; // {FuncionarioID, FuncionarioNome, Cargo}
-  let tasks = [];     // [{TarefaID,Tarefa,Status,Observacao}]
+  let session = null;
+  let tasks = [];
   const el = s => document.querySelector(s);
 
   // ===== SESSION STORAGE =====
@@ -130,7 +125,7 @@
   function saveSession(s){ localStorage.setItem('check_session', JSON.stringify(s)); }
   function clearSession(){ localStorage.removeItem('check_session'); }
 
-  // ===== LOGIN UI =====
+  // ===== LOGIN =====
   function showLoginModal(show=true){
     el('#loginModal').classList.toggle('hidden', !show);
     if(show){ loadUsersForLogin(); el('#passInput').value=''; el('#errMsg').textContent=''; }
@@ -148,9 +143,7 @@
           .sort((a,b)=>a.FuncionarioNome.localeCompare(b.FuncionarioNome))
           .map(u=>`<option value="${u.FuncionarioID}">${u.FuncionarioNome} • ${u.Cargo}</option>`)
           .join('');
-    }catch{
-      sel.innerHTML = `<option value="">Erro ao carregar</option>`;
-    }
+    }catch{ sel.innerHTML = `<option value="">Erro ao carregar</option>`; }
   }
   async function doLogin(){
     const userId = el('#userSelect').value;
@@ -179,7 +172,7 @@
       if(j.ok && j.notices && j.notices.length){
         el('#bannerList').innerHTML = j.notices.map(m=>`<li>${m.replace(/</g,'&lt;')}</li>`).join('');
         el('#banner').style.display='';
-      } else { el('#banner').style.display='none'; }
+      } else el('#banner').style.display='none';
     }catch{ el('#banner').style.display='none'; }
   }
   async function loadAll(){
@@ -192,9 +185,8 @@
     el('#dateSpan').textContent = 'Data: ' + j.date;
     const f = (j.funcionarios && j.funcionarios[0]) || {tasks:[]};
     tasks = f.tasks || [];
-    const metrics = j.metrics || {total:tasks.length, done:tasks.filter(t=>t.Status).length, pending:0, pct:0};
-    metrics.pending = metrics.total - metrics.done;
-    metrics.pct = metrics.total ? Math.round((metrics.done/metrics.total)*100) : 0;
+    const total = tasks.length, done = tasks.filter(t=>t.Status).length;
+    const metrics = {total, done, pending: total-done, pct: total?Math.round((done/total)*100):0};
     render(tasks, metrics);
   }
 
@@ -219,82 +211,45 @@
     kpis(m);
 
     const makeItem = (t) => {
-      const cid = `c_${t.TarefaID}`;
-      const oid = `o_${t.TarefaID}`;
-      return `
-        <div class="task">
-          <input type="checkbox" id="${cid}" ${t.Status?'checked':''}>
-          <div style="flex:1">
-            <div class="title">${t.Tarefa}</div>
-            <div class="obs">
-              <input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}">
-            </div>
-          </div>
-        </div>
-      `;
+      const cid = `c_${t.TarefaID}`, oid = `o_${t.TarefaID}`;
+      return `<div class="task">
+        <input type="checkbox" id="${cid}" ${t.Status?'checked':''}>
+        <div style="flex:1">
+          <div class="title">${t.Tarefa}</div>
+          <div class="obs"><input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}"></div>
+        </div></div>`;
     };
-    el('#listPend').innerHTML = pend.length ? pend.map(makeItem).join('') : `<div class="empty">Sem pendências 🎉</div>`;
-    el('#listDone').innerHTML = done.length ? done.map(makeItem).join('') : `<div class="empty">Nada concluído ainda.</div>`;
+    el('#listPend').innerHTML = pend.length? pend.map(makeItem).join(''):`<div class="empty">Sem pendências 🎉</div>`;
+    el('#listDone').innerHTML = done.length? done.map(makeItem).join(''):`<div class="empty">Nada concluído ainda.</div>`;
 
-    // binds
     list.forEach(t=>{
-      const cid = el(`#c_${t.TarefaID}`);
-      const oid = el(`#o_${t.TarefaID}`);
+      const cid = el(`#c_${t.TarefaID}`), oid = el(`#o_${t.TarefaID}`);
       cid?.addEventListener('change', async (ev)=>{
-        const checked = ev.target.checked;
-        const obs = oid?.value || '';
+        const checked = ev.target.checked, obs = oid?.value||'';
         const ok = await toggleTask(t.TarefaID, checked, obs);
-        if(!ok){ ev.target.checked = !checked; return; }
-        // atualiza memória
-        t.Status = checked; t.Observacao = obs;
-        // re-render leve: apenas KPIs e contadores
-        const newPend = tasks.filter(x=>!x.Status).length;
-        const newDone = tasks.length - newPend;
-        const pct = tasks.length ? Math.round((newDone/tasks.length)*100) : 0;
-        kpis({total:tasks.length, done:newDone, pending:newPend, pct});
-        el('#countPend').textContent = newPend;
-        el('#countDone').textContent = newDone;
-        // mover o item entre listas sem recarregar tudo:
-        const itemHtml = cid.closest('.task').outerHTML;
-        if(checked){
-          // remove de pendentes
-          cid.closest('.task').remove();
-          // adiciona em concluídas
-          const listDone = el('#listDone');
-          if(listDone.querySelector('.empty')) listDone.innerHTML = '';
-          listDone.insertAdjacentHTML('afterbegin', itemHtml);
-        }else{
-          cid.closest('.task').remove();
-          const listPend = el('#listPend');
-          if(listPend.querySelector('.empty')) listPend.innerHTML = '';
-          listPend.insertAdjacentHTML('afterbegin', itemHtml);
-        }
+        if(!ok) ev.target.checked=!checked;
+        else { t.Status=checked; t.Observacao=obs; }
       });
       oid?.addEventListener('change', async ()=>{
-        const checked = !!el(`#c_${t.TarefaID}`)?.checked;
-        const obs = oid.value || '';
-        const ok = await toggleTask(t.TarefaID, checked, obs);
-        if(ok){ t.Observacao = obs; } // mantém memória
+        const checked=!!el(`#c_${t.TarefaID}`)?.checked, obs=oid.value||'';
+        const ok=await toggleTask(t.TarefaID,checked,obs); if(ok) t.Observacao=obs;
       });
     });
   }
 
-  // ===== WRITE =====
+  // ===== WRITE (usando FormData) =====
   async function toggleTask(tarefaId, done, obs){
     try{
-      const r = await fetch(API_URL, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          action:'toggle',
-          FuncionarioID: session.FuncionarioID,
-          TarefaID: tarefaId,
-          done: !!done,
-          usuario: session.FuncionarioNome,
-          obs: obs || ''
-        })
-      });
-      const j = await r.json();
+      const form=new FormData();
+      form.append("action","toggle");
+      form.append("FuncionarioID", session.FuncionarioID);
+      form.append("TarefaID", tarefaId);
+      form.append("done", done? "true":"false");
+      form.append("usuario", session.FuncionarioNome);
+      form.append("obs", obs||"");
+
+      const r=await fetch(API_URL,{method:'POST',body:form});
+      const j=await r.json();
       if(!j.ok) throw new Error(j.error||'Falha ao salvar');
       return true;
     }catch(err){
@@ -304,14 +259,13 @@
   }
 
   // ===== BOOT =====
-  const saved = loadSession();
-  if(saved){ session = saved; showLoginModal(false); loadAll(); }
-  else { showLoginModal(true); }
+  const saved=loadSession();
+  if(saved){ session=saved; showLoginModal(false); loadAll(); }
+  else showLoginModal(true);
 
-  // listeners
-  el('#enterBtn').onclick = doLogin;
-  el('#logoutBtn').onclick = ()=>{ clearSession(); session=null; renderEmpty('Sessão encerrada.'); showLoginModal(true); };
-  el('#passInput').addEventListener('keyup', (e)=>{ if(e.key==='Enter') doLogin(); });
+  el('#enterBtn').onclick=doLogin;
+  el('#logoutBtn').onclick=()=>{ clearSession(); session=null; renderEmpty('Sessão encerrada.'); showLoginModal(true); };
+  el('#passInput').addEventListener('keyup',e=>{ if(e.key==='Enter') doLogin(); });
 </script>
 </body>
 </html>
