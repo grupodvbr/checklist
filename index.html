@@ -1,271 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Checklist • Empresas</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Check List Gerencial Diário</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0c1220; --card:#0f1628; --muted:#9aa4b2; --text:#e9edf5; --line:#1e2a44;
-    --brand:#22c55e; --brand2:#60a5fa; --danger:#ef4444; --warn:#f59e0b;
-    --chip:#0a1020; --good:#16a34a;
-  }
-  *{box-sizing:border-box}
-  body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text);}
-  header{position:sticky; top:0; z-index:30; background:linear-gradient(180deg, rgba(15,22,40,.98), rgba(15,22,40,.8)); border-bottom:1px solid var(--line); backdrop-filter: blur(8px);}
-  .wrap{max-width:980px; padding:14px 16px; margin:0 auto;}
-  .topbar{display:flex; align-items:center; gap:12px}
-  .brand{font-weight:800; font-size:18px; letter-spacing:.2px}
-  .who{margin-left:auto; font-size:12px; color:var(--muted)}
-  .date{font-size:12px; color:var(--muted); margin-top:4px}
-  .banner{margin-top:10px; border:1px solid rgba(245,158,11,.5); background:rgba(245,158,11,.08); padding:10px 12px; border-radius:14px}
-  .banner strong{color:#fde68a}
-  .banner ul{margin:6px 0 0 18px}
-
-  main{max-width:980px; margin:14px auto 80px; padding:0 16px}
-  .kpis{display:grid; grid-template-columns:1fr; gap:10px}
-  .kpi{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px}
-  .kpi h3{margin:0 0 6px; font-size:14px; color:var(--muted); font-weight:600}
-  .big{font-size:22px; font-weight:800}
-  .progress{height:10px; background:#0a1120; border:1px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px}
-  .progress > div{height:100%; background:linear-gradient(90deg,var(--brand),var(--brand2)); width:0%}
-
-  .section{margin-top:14px}
-  .section h2{font-size:15px; margin:0 0 8px; color:var(--muted); font-weight:700; display:flex; align-items:center; gap:8px}
-  .pill{font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--chip)}
-  .list{display:flex; flex-direction:column; gap:10px}
-  .task{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; display:flex; gap:10px; align-items:flex-start}
-  .task input[type=checkbox]{width:20px; height:20px; flex:0 0 auto}
-  .title{font-weight:700}
-  .obs{margin-top:6px}
-  .obs input{width:100%; background:#0a1020; border:1px solid var(--line); border-radius:10px; padding:8px; color:var(--text)}
-  .ghost{background:transparent; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:8px 12px}
-  .fab{position:fixed; right:16px; bottom:16px; background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#051016; border:0; border-radius:999px; padding:12px 16px; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  .empty{color:var(--muted); text-align:center; padding:18px}
-  .modal{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:60}
-  .modal.hidden{display:none}
-  .dialog{width:100%; max-width:380px; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px}
-  .dialog h3{margin:0 0 10px; font-size:18px}
-  .field{display:flex; flex-direction:column; gap:6px; margin:10px 0}
-  .field select,.field input{background:#0a1020; color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 12px}
-  .err{color:#fecaca; font-size:12px; min-height:16px}
-  @media(min-width:720px){
-    .kpis{grid-template-columns:repeat(4,1fr)}
-  }
+:root {
+  --bg:#0e172a;--card:#1e293b;--accent:#06b6d4;--green:#16a34a;--red:#ef4444;
+  --text:#e2e8f0;--muted:#94a3b8;--radius:12px;
+}
+*{box-sizing:border-box;font-family:Inter,sans-serif;}
+body{margin:0;background:var(--bg);color:var(--text);padding:10px;}
+h1{text-align:center;color:var(--accent);margin:10px 0;}
+.card{
+  background:var(--card);padding:15px;border-radius:var(--radius);
+  margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,.3);
+}
+label{font-weight:600;font-size:15px;}
+.options{display:flex;gap:10px;margin-top:8px;}
+.options button{
+  flex:1;padding:10px;border:none;border-radius:var(--radius);
+  color:#fff;font-weight:600;font-size:14px;cursor:pointer;
+}
+.confere{background:var(--green);}
+.nao-confere{background:var(--red);}
+.options button.active{outline:3px solid var(--accent);}
+#responsavel{
+  width:100%;padding:12px;border:none;border-radius:var(--radius);
+  margin:10px 0;font-size:15px;
+}
+#send{
+  background:var(--accent);width:100%;padding:14px;font-size:16px;font-weight:700;
+  color:#fff;border:none;border-radius:var(--radius);margin-top:10px;
+}
+#send:disabled{opacity:.4;}
+.overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;
+  z-index:999;color:#fff;font-size:18px;font-weight:600;
+}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">Checklist • Empresas</div>
-      <span class="who" id="whoSpan"></span>
-    </div>
-    <div class="date" id="dateSpan">Carregando…</div>
-    <div class="banner" id="banner" style="display:none">
-      <strong>Avisos importantes</strong>
-      <ul id="bannerList"></ul>
-    </div>
-  </div>
-</header>
+  <h1>Check List Diário</h1>
+  <input id="responsavel" placeholder="Responsável pela conferência" />
+  <div id="checklist">Carregando itens...</div>
+  <button id="send" disabled>Enviar Check List</button>
 
-<main>
-  <section class="kpis">
-    <div class="kpi"><h3>Total</h3><div class="big" id="kpiTotal">0</div></div>
-    <div class="kpi"><h3>Concluídas</h3><div class="big" id="kpiDone">0</div></div>
-    <div class="kpi"><h3>Pendentes</h3><div class="big" id="kpiPend">0</div></div>
-    <div class="kpi"><h3>Conclusão</h3><div class="big" id="kpiPct">0%</div><div class="progress"><div id="kpiBar"></div></div></div>
-  </section>
-
-  <section class="section">
-    <h2>Pendentes <span class="pill" id="countPend">0</span></h2>
-    <div class="list" id="listPend"><div class="empty">Carregando…</div></div>
-  </section>
-
-  <section class="section">
-    <h2>Concluídas <span class="pill" id="countDone">0</span></h2>
-    <div class="list" id="listDone"><div class="empty">Carregando…</div></div>
-  </section>
-</main>
-
-<button class="fab ghost" id="logoutBtn">Sair</button>
-
-<!-- Modal de Login -->
-<div class="modal hidden" id="loginModal">
-  <div class="dialog">
-    <h3>Acesso ao Checklist</h3>
-    <div class="field">
-      <label>Usuário</label>
-      <select id="userSelect"><option value="">Carregando…</option></select>
-    </div>
-    <div class="field">
-      <label>Senha</label>
-      <input id="passInput" type="password" autocomplete="current-password" placeholder="••••">
-    </div>
-    <div class="err" id="errMsg"></div>
-    <div style="display:flex; gap:8px; justify-content:flex-end">
-      <button class="ghost" id="enterBtn">Entrar</button>
-    </div>
-  </div>
-</div>
+  <div class="overlay" id="overlay">Enviando...</div>
+  <footer>© Gestão Mercatto</footer>
 
 <script>
-  // ===== CONFIG =====
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz8FyNkIXxoa9HcdQgwh8-d2KPNAap5ZcdBOap-rmZ3tggHojSyyicDgOMAshp-X0s/exec';
+const API_URL = "https://script.google.com/macros/s/AKfycbxqVtrtnoASGjXt61YzcUfdRV-mBABeRZ38XNDGLd7s1plDG3-o8TtyCpWyiROef6gV/exec";
+let items = [];
+let results = [];
 
-  // ===== STATE =====
-  let session = null;
-  let tasks = [];
-  const el = s => document.querySelector(s);
+// 🔹 Carrega itens da planilha
+async function carregarItens(){
+  const res = await fetch(API_URL+"?action=get");
+  const data = await res.json();
+  items = data.itens;
+  render();
+}
 
-  // ===== SESSION STORAGE =====
-  function loadSession(){ try{ return JSON.parse(localStorage.getItem('check_session')) || null; }catch{ return null; } }
-  function saveSession(s){ localStorage.setItem('check_session', JSON.stringify(s)); }
-  function clearSession(){ localStorage.removeItem('check_session'); }
+function render(){
+  const container=document.getElementById("checklist");
+  container.innerHTML="";
+  results = Array(items.length).fill(null);
+  items.forEach((it,i)=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <label>${i+1}. ${it}</label>
+      <div class="options">
+        <button class="confere" onclick="mark(${i},true)">Confere</button>
+        <button class="nao-confere" onclick="mark(${i},false)">Não Confere</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
 
-  // ===== LOGIN =====
-  function showLoginModal(show=true){
-    el('#loginModal').classList.toggle('hidden', !show);
-    if(show){ loadUsersForLogin(); el('#passInput').value=''; el('#errMsg').textContent=''; }
-  }
-  async function loadUsersForLogin(){
-    const sel = el('#userSelect');
-    sel.innerHTML = `<option value="">Carregando…</option>`;
-    try{
-      const r = await fetch(API_URL+'?action=users');
-      const j = await r.json();
-      if(!j.ok) throw new Error('Falha ao carregar usuários');
-      window.__usersCache = j.users || [];
-      sel.innerHTML = `<option value="">Selecione seu nome</option>` +
-        (window.__usersCache)
-          .sort((a,b)=>a.FuncionarioNome.localeCompare(b.FuncionarioNome))
-          .map(u=>`<option value="${u.FuncionarioID}">${u.FuncionarioNome} • ${u.Cargo}</option>`)
-          .join('');
-    }catch{ sel.innerHTML = `<option value="">Erro ao carregar</option>`; }
-  }
-  async function doLogin(){
-    const userId = el('#userSelect').value;
-    const senha = el('#passInput').value.trim();
-    el('#errMsg').textContent = '';
-    if(!userId){ el('#errMsg').textContent = 'Selecione seu nome.'; return; }
-    if(!senha){ el('#errMsg').textContent = 'Informe a senha.'; return; }
-    const rec = (window.__usersCache||[]).find(u => String(u.FuncionarioID)===String(userId));
-    if(!rec){ el('#errMsg').textContent = 'Usuário não encontrado.'; return; }
-    try{
-      const res = await fetch(API_URL+`?action=login&usuario=${encodeURIComponent(rec.Usuario)}&senha=${encodeURIComponent(senha)}`);
-      const out = await res.json();
-      if(!out.ok) throw new Error(out.error || 'Falha no login');
-      session = out.user;
-      saveSession(session);
-      showLoginModal(false);
-      loadAll();
-    }catch(err){ el('#errMsg').textContent = err.message; }
-  }
+function mark(index,value){
+  results[index]=value;
+  const buttons=document.querySelectorAll(".card")[index].querySelectorAll("button");
+  buttons.forEach(btn=>btn.classList.remove("active"));
+  buttons[value?0:1].classList.add("active");
+  document.getElementById("send").disabled = results.includes(null) || !document.getElementById("responsavel").value.trim();
+}
 
-  // ===== LOAD =====
-  async function loadNotices(){
-    try{
-      const r = await fetch(API_URL+'?action=notices');
-      const j = await r.json();
-      if(j.ok && j.notices && j.notices.length){
-        el('#bannerList').innerHTML = j.notices.map(m=>`<li>${m.replace(/</g,'&lt;')}</li>`).join('');
-        el('#banner').style.display='';
-      } else el('#banner').style.display='none';
-    }catch{ el('#banner').style.display='none'; }
-  }
-  async function loadAll(){
-    if(!session){ showLoginModal(true); return; }
-    el('#whoSpan').textContent = `${session.FuncionarioNome} • ${session.Cargo}`;
-    await loadNotices();
-    const r = await fetch(API_URL+`?action=bootstrap&userId=${encodeURIComponent(session.FuncionarioID)}`);
-    const j = await r.json();
-    if(!j.ok){ renderEmpty('Erro ao carregar.'); return; }
-    el('#dateSpan').textContent = 'Data: ' + j.date;
-    const f = (j.funcionarios && j.funcionarios[0]) || {tasks:[]};
-    tasks = f.tasks || [];
-    const total = tasks.length, done = tasks.filter(t=>t.Status).length;
-    const metrics = {total, done, pending: total-done, pct: total?Math.round((done/total)*100):0};
-    render(tasks, metrics);
-  }
+document.getElementById("responsavel").addEventListener("input",()=>{
+  document.getElementById("send").disabled = results.includes(null) || !document.getElementById("responsavel").value.trim();
+});
 
-  // ===== RENDER =====
-  function renderEmpty(msg){
-    el('#listPend').innerHTML = `<div class="empty">${msg}</div>`;
-    el('#listDone').innerHTML = `<div class="empty">${msg}</div>`;
-    kpis({total:0,done:0,pending:0,pct:0});
-  }
-  function kpis(m){
-    el('#kpiTotal').textContent = m.total;
-    el('#kpiDone').textContent = m.done;
-    el('#kpiPend').textContent = m.pending;
-    el('#kpiPct').textContent = `${m.pct}%`;
-    el('#kpiBar').style.width = `${m.pct}%`;
-  }
-  function render(list, m){
-    const pend = list.filter(t=>!t.Status);
-    const done = list.filter(t=>t.Status);
-    el('#countPend').textContent = pend.length;
-    el('#countDone').textContent = done.length;
-    kpis(m);
+// 🔹 Enviar checklist
+document.getElementById("send").addEventListener("click",async()=>{
+  const overlay=document.getElementById("overlay");
+  overlay.style.display="flex";
+  const payload = {
+    action: "save",
+    responsavel: document.getElementById("responsavel").value,
+    respostas: items.map((it,i)=>({item:it,status:results[i]?"Confere":"Não Confere"}))
+  };
 
-    const makeItem = (t) => {
-      const cid = `c_${t.TarefaID}`, oid = `o_${t.TarefaID}`;
-      return `<div class="task">
-        <input type="checkbox" id="${cid}" ${t.Status?'checked':''}>
-        <div style="flex:1">
-          <div class="title">${t.Tarefa}</div>
-          <div class="obs"><input type="text" id="${oid}" placeholder="Observação (opcional)" value="${(t.Observacao||'').replace(/"/g,'&quot;')}"></div>
-        </div></div>`;
-    };
-    el('#listPend').innerHTML = pend.length? pend.map(makeItem).join(''):`<div class="empty">Sem pendências 🎉</div>`;
-    el('#listDone').innerHTML = done.length? done.map(makeItem).join(''):`<div class="empty">Nada concluído ainda.</div>`;
-
-    list.forEach(t=>{
-      const cid = el(`#c_${t.TarefaID}`), oid = el(`#o_${t.TarefaID}`);
-      cid?.addEventListener('change', async (ev)=>{
-        const checked = ev.target.checked, obs = oid?.value||'';
-        const ok = await toggleTask(t.TarefaID, checked, obs);
-        if(!ok) ev.target.checked=!checked;
-        else { t.Status=checked; t.Observacao=obs; }
-      });
-      oid?.addEventListener('change', async ()=>{
-        const checked=!!el(`#c_${t.TarefaID}`)?.checked, obs=oid.value||'';
-        const ok=await toggleTask(t.TarefaID,checked,obs); if(ok) t.Observacao=obs;
-      });
+  try {
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
     });
+    const msg = await res.text();
+    overlay.innerText="✅ Enviado e resetado!";
+    setTimeout(()=>location.reload(),2000);
+  } catch(e){
+    console.error(e);
+    overlay.innerText="❌ Erro ao enviar!";
+    setTimeout(()=>overlay.style.display="none",3000);
   }
+});
 
-  // ===== WRITE (usando FormData) =====
-  async function toggleTask(tarefaId, done, obs){
-    try{
-      const form=new FormData();
-      form.append("action","toggle");
-      form.append("FuncionarioID", session.FuncionarioID);
-      form.append("TarefaID", tarefaId);
-      form.append("done", done? "true":"false");
-      form.append("usuario", session.FuncionarioNome);
-      form.append("obs", obs||"");
-
-      const r=await fetch(API_URL,{method:'POST',body:form});
-      const j=await r.json();
-      if(!j.ok) throw new Error(j.error||'Falha ao salvar');
-      return true;
-    }catch(err){
-      alert('Erro ao salvar: '+err.message);
-      return false;
-    }
-  }
-
-  // ===== BOOT =====
-  const saved=loadSession();
-  if(saved){ session=saved; showLoginModal(false); loadAll(); }
-  else showLoginModal(true);
-
-  el('#enterBtn').onclick=doLogin;
-  el('#logoutBtn').onclick=()=>{ clearSession(); session=null; renderEmpty('Sessão encerrada.'); showLoginModal(true); };
-  el('#passInput').addEventListener('keyup',e=>{ if(e.key==='Enter') doLogin(); });
+carregarItens();
 </script>
 </body>
 </html>
