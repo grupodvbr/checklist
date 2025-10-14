@@ -1,148 +1,338 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>Check List Gerencial Diário</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0b1220;
-  --panel:#111a2b;
-  --accent:#06b6d4;
-  --green:#16a34a;
-  --red:#ef4444;
-  --white:#f1f5f9;
-  --muted:#9ca3af;
-  --radius:14px;
+:root{
+  --bg:#0b1220;--panel:#111a2b;--ink:#e6eef8;--muted:#9aa6b2;--line:#1e2a3f;
+  --accent:#06b6d4;--green:#16a34a;--red:#ef4444;--warn:#f59e0b;--radius:16px;
 }
-*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif;}
-body{margin:0;background:var(--bg);color:var(--white);padding:12px;}
-h1{
-  text-align:center;margin:0 0 15px;font-size:22px;
-  font-family:Orbitron,sans-serif;color:var(--accent);text-shadow:0 0 10px #06b6d499;
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
+body{margin:0;background:linear-gradient(180deg,#0a1022,#0b1220);color:var(--ink);}
+.container{max-width:920px;margin:0 auto;padding:14px;}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+h1{margin:8px 0 10px;font-size:22px;color:var(--accent);font-family:Orbitron,sans-serif;letter-spacing:.5px;text-shadow:0 0 10px #06b6d477;}
+.userbox{font-size:12px;color:var(--muted);}
+.userbox button{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:10px;margin-left:8px}
+#responsavelTag{display:inline-block;background:#0e1a30;border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:#cde6ff;font-size:12px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.item-title{font-weight:600;font-size:15px;margin-bottom:12px}
+.options{display:flex;gap:10px}
+.btn{
+  position:relative;flex:1;padding:12px 14px;border:none;border-radius:14px;color:#fff;
+  font-weight:700;cursor:pointer;overflow:hidden;isolation:isolate;
 }
-#responsavel{
-  width:100%;padding:12px;border:none;border-radius:var(--radius);
-  margin-bottom:15px;font-size:15px;
-  background:var(--panel);color:var(--white);
+.btn::after{
+  content:"";position:absolute;inset:0;z-index:-1;transform:scaleX(var(--fill,0));transform-origin:left;
+  transition:transform .45s ease;
 }
-.card{
-  background:var(--panel);border-radius:var(--radius);
-  margin-bottom:10px;padding:15px;box-shadow:0 4px 8px rgba(0,0,0,.3);
-  transition:transform .2s;
+.btn.confere{background:rgba(22,163,74,.25);border:1px solid rgba(22,163,74,.35)}
+.btn.confere::after{background:var(--green)}
+.btn.nao{background:rgba(239,68,68,.25);border:1px solid rgba(239,68,68,.35)}
+.btn.nao::after{background:var(--red)}
+.btn.active{outline:3px solid #0ea5bacc}
+
+.sync{margin-top:8px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync.ok{color:#9ae6b4}
+.sync.err{color:#fecaca}
+
+#finalizar{
+  width:100%;padding:16px;border:none;border-radius:16px;margin:12px 0 4px;
+  background:var(--accent);color:#00121a;font-weight:900;font-size:16px;cursor:not-allowed;opacity:.5;position:relative;overflow:hidden;isolation:isolate;
 }
-.card:hover{transform:scale(1.02);}
-.item-title{font-weight:600;font-size:15px;margin-bottom:10px;color:var(--white);}
-.options{display:flex;gap:10px;}
-.options button{
-  flex:1;padding:12px;border:none;border-radius:var(--radius);
-  font-weight:600;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;
+#finalizar.ready{cursor:pointer;opacity:1}
+#finalizar::after{
+  content:"";position:absolute;inset:0;transform:scaleX(var(--prog,0));transform-origin:left;transition:transform .9s ease;
+  background:var(--accent);
 }
-.confere{background:var(--green);}
-.nao-confere{background:var(--red);}
-.options button.active{outline:3px solid var(--accent);}
-#send{
-  background:var(--accent);border:none;width:100%;padding:14px;
-  border-radius:var(--radius);font-size:16px;font-weight:700;
-  color:#fff;margin-top:10px;cursor:pointer;transition:.3s;
+#finalizar.ok::after{background:var(--green)}
+#finalizar.bad::after{background:var(--red)}
+#finalizar span{position:relative;z-index:1}
+
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;margin-left:6px;border:1px solid var(--line);color:#cbd5e1}
+
+footer{margin:10px 0 20px;text-align:center;color:var(--muted);font-size:12px}
+
+/* Login modal */
+#login{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;
 }
-#send:disabled{opacity:.4;cursor:not-allowed;}
-.overlay{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;
-  z-index:999;color:#fff;font-size:18px;font-weight:600;
+.box{
+  width:min(92vw,420px);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.45)
 }
-footer{text-align:center;color:var(--muted);margin-top:20px;font-size:12px;}
+.box h2{margin:6px 0 12px;font-size:18px;color:#d6efff}
+.input{width:100%;padding:12px 13px;border:1px solid var(--line);background:#0c1730;color:#e8f2ff;border-radius:12px;margin:8px 0}
+#loginBtn{width:100%;padding:12px;border:none;border-radius:12px;background:var(--accent);font-weight:800}
+.err{color:#fecaca;font-size:12px;min-height:16px}
+
+/* Motivo modal */
+#motivoWrap{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:9998}
+.modal{width:min(92vw,520px);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.modal h3{margin:6px 0 10px}
+textarea{width:100%;min-height:110px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0c1730;color:#e8f2ff}
+.modal .actions{display:flex;gap:10px;margin-top:10px}
+.modal .actions button{flex:1;padding:10px;border:none;border-radius:12px;color:#fff;font-weight:700}
+#motivoCancelar{background:#6b7280}
+#motivoSalvar{background:var(--red)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0e1b34;border:1px solid #1f2b44;color:#dbeafe;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none;z-index:99999}
 </style>
 </head>
 <body>
-  <h1>Check List Diário</h1>
-  <input id="responsavel" placeholder="Responsável pela conferência" autocomplete="off">
-  <div id="checklist">Carregando itens...</div>
-  <button id="send" disabled>Finalizar Check List</button>
-  <div class="overlay" id="overlay">Enviando...</div>
-  <footer>© Mercatto Gestão</footer>
+  <div id="login">
+    <div class="box">
+      <h2>Entrar no Check List</h2>
+      <input id="user" class="input" placeholder="Usuário" autocomplete="username">
+      <input id="pass" class="input" placeholder="Senha" type="password" autocomplete="current-password">
+      <button id="loginBtn">Entrar</button>
+      <div class="err" id="loginErr"></div>
+      <div style="color:var(--muted);font-size:12px;margin-top:6px">O login é salvo neste dispositivo. O nome do usuário será registrado como <b>Responsável</b>.</div>
+    </div>
+  </div>
+
+  <div class="container" id="app" style="display:none">
+    <header>
+      <h1>Check List Diário <span id="dia" class="badge"></span></h1>
+      <div class="userbox">
+        <span id="responsavelTag"></span>
+        <button id="logout">Sair</button>
+      </div>
+    </header>
+
+    <div id="checklist"></div>
+
+    <button id="finalizar"><span>Finalizar e Enviar Resumo</span></button>
+    <div class="toast" id="toast">pronto!</div>
+    <footer>© Mercatto Gestão</footer>
+  </div>
+
+  <!-- Motivo "Não Confere" -->
+  <div id="motivoWrap">
+    <div class="modal">
+      <h3>Motivo – <span id="motivoItemTitulo"></span></h3>
+      <textarea id="motivoTexto" placeholder="Descreva o problema, pendência, ação corretiva, responsável..."></textarea>
+      <div class="actions">
+        <button id="motivoCancelar">Cancelar</button>
+        <button id="motivoSalvar">Salvar motivo</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxqVtrtnoASGjXt61YzcUfdRV-mBABeRZ38XNDGLd7s1plDG3-o8TtyCpWyiROef6gV/exec"; // substitua seu ID
+/* ========= CONFIG ========= */
+const API_URL = "https://script.google.com/macros/s/AKfycbxqVtrtnoASGjXt61YzcUfdRV-mBABeRZ38XNDGLd7s1plDG3-o8TtyCpWyiROef6gV/exec"; // <— SUBSTITUA PELO SEU URL
+/* ========================= */
 
-let items = [];
-let results = [];
+// Estado
+let items = [];           // [{numero, descricao, status, motivo?}]
+let results = [];         // true=confere / false=NC / null=pendente
+let motivos = {};         // idx -> texto
+let pendingNAIdx = null;  // para saber em qual item abrir modal
 
-// 🔹 Carregar itens da planilha
-async function carregarItens(){
-  const res = await fetch(API_URL + "?action=get");
-  const data = await res.json();
-  items = data.itens;
-  render();
+/* ======== Utils ======== */
+const q = s => document.querySelector(s);
+const toast = (msg)=>{ const t=q('#toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2000); };
+const dayBadge = ()=>{ const d=new Date(); return d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'}); };
+const getUser = ()=> localStorage.getItem('cl_user') || '';
+const setUser = (u)=> localStorage.setItem('cl_user', u);
+const clearUser = ()=> localStorage.removeItem('cl_user');
+
+/* ======== Login ======== */
+function initLogin(){
+  const saved = getUser();
+  if(saved){
+    q('#login').style.display='none';
+    q('#app').style.display='';
+    q('#responsavelTag').textContent = 'Responsável: ' + saved;
+    loadData();
+  }else{
+    q('#login').style.display='flex';
+    q('#app').style.display='none';
+  }
+  q('#dia').textContent = dayBadge();
+}
+q('#loginBtn').addEventListener('click', ()=>{
+  const u = q('#user').value.trim();
+  const p = q('#pass').value.trim();
+  if(!u || !p){ q('#loginErr').textContent = 'Informe usuário e senha.'; return; }
+  // validação local simples (se quiser validar no GAS, me peça o Code.gs)
+  setUser(u);
+  q('#login').style.display='none';
+  q('#app').style.display='';
+  q('#responsavelTag').textContent = 'Responsável: ' + u;
+  loadData();
+});
+q('#logout').addEventListener('click', ()=>{ clearUser(); location.reload(); });
+
+/* ======== Carregar itens ======== */
+async function loadData(){
+  try{
+    const r = await fetch(API_URL+'?action=get');
+    const data = await r.json();
+    items = (data.itens||[]).map(x=>({
+      numero: x.numero ?? '',
+      descricao: x.descricao ?? (typeof x==='string'?x:''),
+      status: x.status || '',
+      motivo: x.motivo || ''
+    }));
+    render();
+  }catch(e){
+    toast('Erro ao carregar itens'); console.error(e);
+  }
 }
 
-// 🔹 Renderizar lista
+/* ======== Render ======== */
 function render(){
-  const container=document.getElementById("checklist");
-  container.innerHTML="";
-  results = Array(items.length).fill(null);
+  const wrap = q('#checklist'); wrap.innerHTML='';
+  results = items.map(it => it.status === 'Confere' ? true : (it.status === 'Não Confere' ? false : null));
+  motivos = {}; items.forEach((it,i)=>{ if(it.motivo) motivos[i]=it.motivo; });
 
   items.forEach((it,i)=>{
-    const descricao = it.descricao || it; // caso seja string simples
-    const div=document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      <div class="item-title">${i+1}. ${descricao}</div>
-      <div class="options">
-        <button class="confere" onclick="mark(${i},true)">Confere</button>
-        <button class="nao-confere" onclick="mark(${i},false)">Não Confere</button>
-      </div>
-    `;
-    container.appendChild(div);
+    const card = document.createElement('div'); card.className='card';
+    const title = document.createElement('div'); title.className='item-title';
+    title.textContent = `${(i+1)}. ${it.descricao}`;
+    const ops = document.createElement('div'); ops.className='options';
+
+    const bC = document.createElement('button'); bC.className='btn confere'; bC.textContent='Confere';
+    const bN = document.createElement('button'); bN.className='btn nao'; bN.textContent='Não Confere';
+    if(results[i]===true) bC.classList.add('active');
+    if(results[i]===false) bN.classList.add('active');
+
+    // fill visual quando marcar
+    const animateFill = (btn)=>{ btn.style.setProperty('--fill','1'); setTimeout(()=>btn.style.removeProperty('--fill'),500); };
+
+    bC.onclick = async ()=>{
+      await marcarItem(i,true);
+      bC.classList.add('active'); bN.classList.remove('active'); animateFill(bC);
+      updateSyncRow(card,true);
+      checkReady();
+    };
+    bN.onclick = ()=>{
+      pendingNAIdx = i;
+      q('#motivoItemTitulo').textContent = it.descricao;
+      q('#motivoTexto').value = motivos[i] || '';
+      q('#motivoWrap').style.display='flex';
+    };
+
+    ops.append(bC,bN);
+    const sync = document.createElement('div'); sync.className='sync'; sync.textContent = it.status ? `Sincronizado: ${it.status}` : 'Pendente';
+    if(it.status) sync.classList.add('ok');
+
+    card.append(title,ops,sync);
+    wrap.append(card);
   });
+
+  checkReady();
 }
 
-function mark(index,value){
-  results[index]=value;
-  const buttons=document.querySelectorAll(".card")[index].querySelectorAll("button");
-  buttons.forEach(btn=>btn.classList.remove("active"));
-  buttons[value?0:1].classList.add("active");
-  checkFormReady();
-}
-
-function checkFormReady(){
-  const nome=document.getElementById("responsavel").value.trim();
-  document.getElementById("send").disabled = results.includes(null) || !nome;
-}
-
-document.getElementById("responsavel").addEventListener("input",checkFormReady);
-
-// 🔹 Enviar respostas
-document.getElementById("send").addEventListener("click",async()=>{
-  const overlay=document.getElementById("overlay");
-  overlay.style.display="flex";
-  const payload={
-    responsavel:document.getElementById("responsavel").value,
-    respostas:items.map((it,i)=>({
-      item:it.descricao || it,
-      status:results[i]?"Confere":"Não Confere"
-    }))
+/* ======== Atualiza status de um item no GAS ======== */
+async function marcarItem(index, ok, motivoText=''){
+  const usuario = getUser();
+  const payload = {
+    action: 'mark',
+    index,                                   // índice do item na planilha (considerando cabeçalho no GAS)
+    status: ok ? 'Confere' : 'Não Confere',
+    motivo: ok ? '' : motivoText,
+    responsavel: usuario
   };
 
+  // visual: botão progress fill na opção escolhida
   try{
-    const res=await fetch(API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-    const msg=await res.text();
-    overlay.innerText="✅ Enviado e salvo!";
-    setTimeout(()=>location.reload(),2000);
+    const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+    const txt = await res.text();
+    if(!res.ok){ throw new Error(txt||'Erro'); }
+    results[index] = ok;
+    if(!ok && motivoText) motivos[index] = motivoText;
+    return true;
   }catch(e){
-    overlay.innerText="❌ Erro ao enviar!";
+    console.error(e); toast('Falha ao salvar na planilha');
+    return false;
+  }
+}
+
+function updateSyncRow(card, ok){
+  const s = card.querySelector('.sync');
+  if(!s) return;
+  s.classList.remove('err'); s.classList.add('ok');
+  s.textContent = ok ? 'Sincronizado: Confere' : 'Sincronizado: Não confere';
+}
+
+/* ======== Modal motivo ======== */
+q('#motivoCancelar').onclick = ()=>{ q('#motivoWrap').style.display='none'; pendingNAIdx=null; };
+q('#motivoSalvar').onclick = async ()=>{
+  const txt = q('#motivoTexto').value.trim();
+  if(!txt){ alert('Digite o motivo.'); return; }
+  const idx = pendingNAIdx;
+  q('#motivoWrap').style.display='none';
+  pendingNAIdx=null;
+
+  // salva no GAS
+  const ok = await marcarItem(idx,false,txt);
+  if(ok){
+    // marca visualmente
+    const card = qAll('.card')[idx];
+    card.querySelector('.btn.nao').classList.add('active');
+    card.querySelector('.btn.confere').classList.remove('active');
+    card.querySelector('.sync').classList.add('ok');
+    card.querySelector('.sync').textContent = 'Sincronizado: Não confere';
+    // efeito de preenchimento vermelho
+    card.querySelector('.btn.nao').style.setProperty('--fill','1');
+    setTimeout(()=>card.querySelector('.btn.nao').style.removeProperty('--fill'),500);
+    checkReady();
+  }
+};
+const qAll = s => Array.from(document.querySelectorAll(s));
+
+/* ======== Checar se pode finalizar ======== */
+function checkReady(){
+  const ready = results.every(v => v!==null) && !!getUser();
+  const btn = q('#finalizar');
+  if(ready){ btn.classList.add('ready'); btn.style.setProperty('--prog','0'); btn.disabled=false; btn.style.opacity='1'; }
+  else{ btn.classList.remove('ready'); btn.disabled=true; btn.style.opacity='.5'; }
+}
+
+/* ======== Finalizar ======== */
+q('#finalizar').addEventListener('click', async ()=>{
+  if(!results.every(v=>v!==null)){ toast('Preencha todos os itens'); return; }
+
+  const usuario = getUser();
+  const respostas = items.map((it,i)=>({
+    item: it.descricao,
+    status: results[i] ? 'Confere' : 'Não Confere',
+    motivo: results[i] ? '' : (motivos[i]||'')
+  }));
+
+  // animação de preenchimento no botão (verde se tudo confere, vermelho se existe NC)
+  const hasNC = respostas.some(r=>r.status==='Não Confere');
+  const btn = q('#finalizar');
+  btn.classList.toggle('ok', !hasNC);
+  btn.classList.toggle('bad', hasNC);
+  btn.style.setProperty('--prog','1');
+
+  try{
+    const r = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'finalize', responsavel:usuario, respostas })
+    });
+    const txt = await r.text();
+    if(!r.ok) throw new Error(txt||'Erro');
+    toast('Resumo enviado e planilha resetada!');
+    setTimeout(()=>location.reload(),1200);
+  }catch(e){
     console.error(e);
-    setTimeout(()=>overlay.style.display="none",3000);
+    toast('Erro ao finalizar');
+    // reverte animação
+    setTimeout(()=>btn.style.setProperty('--prog','0'),400);
   }
 });
 
-carregarItens();
+/* ======== Start ======== */
+document.addEventListener('DOMContentLoaded', initLogin);
 </script>
 </body>
 </html>
