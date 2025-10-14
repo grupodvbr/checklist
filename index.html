@@ -6,223 +6,166 @@
 <title>Check List Gerencial Diário</title>
 <style>
   :root{
-    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
-    --accent:#0ea5e9; --green:#16a34a; --red:#ef4444;
+    --bg:#f8fafc;--card:#ffffff;--border:#e5e7eb;
+    --text:#1f2937;--muted:#6b7280;--accent:#0284c7;
+    --green:#16a34a;--red:#dc2626;
   }
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
-  body{margin:0;background:var(--bg);color:var(--ink)}
-  header{max-width:880px;margin:16px auto 8px;padding:0 12px;display:flex;align-items:center;justify-content:space-between}
-  h1{margin:0;font-size:18px;color:#0b4a6f}
-  .badge{font-size:12px;color:var(--muted)}
-  .user{font-size:12px;color:var(--muted)}
-  .user button{margin-left:8px;padding:6px 10px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer}
-
-  .wrap{max-width:880px;margin:0 auto;padding:12px}
-  .card{
-    background:var(--card);border:1px solid var(--line);border-radius:12px;
-    padding:12px;margin:10px 0
-  }
+  *{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--text)}
+  header{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:10px auto;padding:10px 16px;background:#fff;border-bottom:1px solid var(--border)}
+  h1{font-size:18px;margin:0;color:var(--accent)}
+  .user{font-size:13px;color:var(--muted)}
+  .user button{margin-left:6px;border:none;background:#f3f4f6;padding:6px 10px;border-radius:8px;cursor:pointer}
+  .wrap{max-width:900px;margin:0 auto;padding:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
   .title{font-weight:600;margin-bottom:10px}
   .row{display:flex;gap:8px}
-  .btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);cursor:pointer;font-weight:600}
-  .btn.conf{background:#e6f6ea;border-color:#c7e7ce;color:#064e2e}
-  .btn.nc{background:#fde8e8;border-color:#f5c2c2;color:#7f1d1d}
+  .btn{flex:1;padding:10px;font-weight:600;border-radius:8px;border:1px solid transparent;cursor:pointer}
+  .conf{background:#e0f7e9;color:#064e2e}
+  .nao{background:#fde8e8;color:#7f1d1d}
   .btn.active{outline:2px solid var(--accent)}
-  .status{margin-top:8px;font-size:12px;color:var(--muted)}
-  .status.ok{color:#0a7a33}
-  .status.err{color:#b91c1c}
-
+  .status{margin-top:6px;font-size:12px;color:var(--muted)}
+  .status.ok{color:var(--green)}
+  .status.err{color:var(--red)}
   #finalizar{
-    width:100%;max-width:880px;margin:10px auto 20px;display:block;
-    padding:12px;border:none;border-radius:12px;background:var(--accent);color:#fff;
-    font-weight:800;cursor:not-allowed;opacity:.5
+    width:100%;max-width:900px;display:block;margin:20px auto;
+    padding:14px;border:none;border-radius:10px;
+    background:var(--accent);color:#fff;font-weight:700;font-size:15px;
+    cursor:not-allowed;opacity:.6;
   }
   #finalizar.ready{cursor:pointer;opacity:1}
-  /* Login simples */
-  #login{position:fixed;inset:0;background:#00000022;display:flex;align-items:center;justify-content:center}
-  .box{width:min(92vw,420px);background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
-  .box h2{margin:0 0 10px}
-  .inp{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}
-  .ok{color:#0a7a33}
-  .err{color:#b91c1c}
+  /* login modal */
+  #login{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:10}
+  .login-box{background:#fff;padding:24px;border-radius:12px;max-width:340px;width:90%;box-shadow:0 10px 25px rgba(0,0,0,0.15)}
+  .login-box h2{margin-top:0;text-align:center;color:var(--accent)}
+  .inp{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin:6px 0}
+  .login-box button{width:100%;margin-top:10px;background:var(--accent);border:none;padding:10px;color:#fff;font-weight:700;border-radius:8px;cursor:pointer}
+  #msg{font-size:12px;color:var(--muted);margin-top:4px;text-align:center}
 </style>
 </head>
 <body>
-
-<!-- Login -->
-<div id="login">
-  <div class="box">
-    <h2>Entrar</h2>
-    <input id="user" class="inp" placeholder="Usuário">
-    <input id="pass" class="inp" placeholder="Senha" type="password">
-    <button id="go" class="btn" style="width:100%;background:var(--accent);color:#fff;border:none">Acessar</button>
-    <div id="msg" class="muted" style="margin-top:6px;font-size:12px;color:var(--muted)">
-      A senha ficará salva neste dispositivo. Ao sair, somente a mesma senha permitirá voltar.
+  <div id="login">
+    <div class="login-box">
+      <h2>Entrar</h2>
+      <input id="user" class="inp" placeholder="Usuário">
+      <input id="pass" class="inp" placeholder="Senha" type="password">
+      <button id="btnLogin">Acessar</button>
+      <div id="msg">A senha será salva neste dispositivo.</div>
     </div>
   </div>
-</div>
 
-<header>
-  <div>
-    <h1>Check List Gerencial Diário</h1>
-    <div class="badge" id="hoje"></div>
-  </div>
-  <div class="user">
-    <span id="resp"></span>
-    <button id="logout">Sair</button>
-  </div>
-</header>
+  <header>
+    <div>
+      <h1>Check List Gerencial Diário</h1>
+      <div style="font-size:12px;color:var(--muted)" id="dataHoje"></div>
+    </div>
+    <div class="user">
+      <span id="responsavel"></span>
+      <button id="logout">Sair</button>
+    </div>
+  </header>
 
-<div class="wrap" id="list">Carregando…</div>
-<button id="finalizar">Finalizar e Enviar Resumo</button>
+  <div class="wrap" id="lista">Carregando...</div>
+  <button id="finalizar">Finalizar e Enviar Resumo</button>
 
 <script>
-/* === CONFIG === */
-const API_URL = "https://script.google.com/macros/s/AKfycbxxy1ow9haS6WQKh-8N4jt6qPUIpzDFda_tqFEsR_YJuaw9XOSgEQkwmX62jf0eSdYY/exec"; // ex: https://script.google.com/macros/s/XXXXX/exec
-/* ============== */
+const API_URL = "https://script.google.com/macros/s/AKfycbxxy1ow9haS6WQKh-8N4jt6qPUIpzDFda_tqFEsR_YJuaw9XOSgEQkwmX62jf0eSdYY/exec"; // Ex: https://script.google.com/macros/s/XXXX/exec
+const LS_USER="cl_user", LS_PASS="cl_pass";
+const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
 
-const $ = s=>document.querySelector(s);
-const $$ = s=>Array.from(document.querySelectorAll(s));
+let itens=[], results=[], motivos={};
 
-/* Login local simples (mesma senha obrigatória depois) */
-const LS_USER = "cl_user";
-const LS_PASS = "cl_pass";
+$("#dataHoje").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"});
 
-function logged(){
-  const u = localStorage.getItem(LS_USER);
-  const p = localStorage.getItem(LS_PASS);
-  return !!(u && p);
+// ==== LOGIN LOCAL ====
+function loginValido(u,p){
+  const uS=localStorage.getItem(LS_USER), pS=localStorage.getItem(LS_PASS);
+  if(uS && pS) return u===uS && p===pS;
+  localStorage.setItem(LS_USER,u);
+  localStorage.setItem(LS_PASS,p);
+  return true;
 }
-function doLogin(u,p){
-  const savedU = localStorage.getItem(LS_USER);
-  const savedP = localStorage.getItem(LS_PASS);
-  if(savedU || savedP){
-    if(u===savedU && p===savedP){ return true; }
-    $("#msg").textContent = "Senha diferente da primeira usada neste dispositivo.";
-    $("#msg").className = "err";
-    return false;
-  }else{
-    localStorage.setItem(LS_USER,u);
-    localStorage.setItem(LS_PASS,p);
-    return true;
-  }
-}
-
-$("#go").onclick = ()=>{
-  const u=$("#user").value.trim(); const p=$("#pass").value.trim();
-  if(!u || !p){ $("#msg").textContent="Informe usuário e senha."; $("#msg").className="err"; return; }
-  if(doLogin(u,p)){ $("#login").style.display="none"; start(); }
+$("#btnLogin").onclick=()=>{
+  const u=$("#user").value.trim(), p=$("#pass").value.trim();
+  if(!u||!p){$("#msg").textContent="Informe usuário e senha.";$("#msg").style.color="red";return;}
+  if(loginValido(u,p)){ $("#login").style.display="none"; start(); }
+  else $("#msg").textContent="Senha diferente da primeira usada neste dispositivo.";
 };
-$("#logout").onclick = ()=>{ localStorage.removeItem(LS_USER); localStorage.removeItem(LS_PASS); location.reload(); };
+$("#logout").onclick=()=>{localStorage.clear();location.reload();};
 
-/* Data topo */
-$("#hoje").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"});
-
-/* Estado */
-let itens = [];      // {numero,descricao,status,motivo}
-let results = [];    // true/false/null
-let motivos = {};    // idx -> texto
-
+// ==== FUNÇÕES ====
 async function carregar(){
-  const r = await fetch(API_URL+"?action=get");
-  const data = await r.json();
-  itens = (data.itens||[]).map(x=>({
-    numero:x.numero, descricao:x.descricao, status:x.status||"", motivo:x.motivo||""
-  }));
-  results = itens.map(it => it.status==="Confere" ? true : (it.status==="Não Confere" ? false : null));
+  const r=await fetch(API_URL+"?action=get");
+  const d=await r.json();
+  itens=(d.itens||[]).map(x=>({numero:x.numero,descricao:x.descricao,status:x.status||"",motivo:x.motivo||""}));
+  results=itens.map(i=>i.status==="Confere"?true:(i.status==="Não Confere"?false:null));
+  desenhar();
 }
-
 function desenhar(){
-  const c = $("#list"); c.innerHTML="";
+  const c=$("#lista"); c.innerHTML="";
   itens.forEach((it,i)=>{
-    const card = document.createElement("div"); card.className="card";
-    card.innerHTML = `
+    const div=document.createElement("div"); div.className="card";
+    div.innerHTML=`
       <div class="title">${i+1}. ${it.descricao}</div>
       <div class="row">
-        <button class="btn conf ${results[i]===true?'active':''}" data-i="${i}" data-ok="1">Confere</button>
-        <button class="btn nc ${results[i]===false?'active':''}" data-i="${i}" data-ok="0">Não confere</button>
+        <button class="btn conf ${results[i]===true?"active":""}" data-i="${i}" data-ok="1">Confere</button>
+        <button class="btn nao ${results[i]===false?"active":""}" data-i="${i}" data-ok="0">Não Confere</button>
       </div>
-      <div class="status ${it.status?'ok':''}" id="s${i}">${it.status?('Sincronizado: '+it.status):'Pendente'}</div>
-    `;
-    c.appendChild(card);
+      <div class="status ${it.status?"ok":""}" id="s${i}">${it.status?("Sincronizado: "+it.status):"Pendente"}</div>`;
+    c.appendChild(div);
   });
+  checkReady();
 }
-
 function checkReady(){
-  const ready = results.every(v=>v!==null) && logged();
-  const b = $("#finalizar");
-  if(ready){ b.classList.add("ready"); b.disabled=false; }
-  else{ b.classList.remove("ready"); b.disabled=true; }
+  const ok=results.every(v=>v!==null);
+  const b=$("#finalizar");
+  if(ok){b.classList.add("ready");b.disabled=false;}
+  else{b.classList.remove("ready");b.disabled=true;}
 }
 
-/* marca 1 item no GAS */
-async function marcar(index, ok, motivo=""){
-  const payload = { action:"mark", index, status: ok?"Confere":"Não Confere", motivo, responsavel: localStorage.getItem(LS_USER) };
-  const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
-  const txt = await res.text();
-  if(!res.ok || txt.startsWith("ERRO")) throw new Error(txt);
+async function marcar(i,ok,motivo=""){
+  const dados={action:"mark",index:i,status:ok?"Confere":"Não Confere",motivo, responsavel:localStorage.getItem(LS_USER)};
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(dados)});
+  const txt=await r.text();
+  if(!r.ok||txt.startsWith("ERRO"))throw new Error(txt);
 }
 
-document.addEventListener("click", async (ev)=>{
-  const btn = ev.target.closest(".btn"); if(!btn) return;
-  const i = Number(btn.dataset.i); const ok = btn.dataset.ok==="1";
-  let motivo = "";
-  if(!ok){
-    motivo = prompt("Motivo do 'Não confere':") || "";
-    if(!motivo.trim()) return;
-  }
-  // feedback imediato
-  btn.classList.add("active");
-  const sib = btn.parentElement.querySelector(`.btn.${ok?'nc':'conf'}`); sib.classList.remove("active");
-
+document.addEventListener("click",async ev=>{
+  const btn=ev.target.closest(".btn");if(!btn)return;
+  const i=+btn.dataset.i;const ok=btn.dataset.ok==="1";
+  let motivo="";
+  if(!ok){motivo=prompt("Motivo do 'Não confere':")||"";if(!motivo.trim())return;}
   try{
-    await marcar(i, ok, motivo);
-    results[i] = ok;
-    if(!ok) motivos[i] = motivo;
-    const st = document.getElementById("s"+i);
-    st.textContent = "Sincronizado: " + (ok?"Confere":"Não confere");
-    st.classList.add("ok"); st.classList.remove("err");
-  }catch(e){
-    const st = document.getElementById("s"+i);
-    st.textContent = "Erro ao salvar"; st.classList.add("err");
-    console.error(e);
-  }
+    await marcar(i,ok,motivo);
+    results[i]=ok;if(!ok)motivos[i]=motivo;
+    $(`#s${i}`).textContent="Sincronizado: "+(ok?"Confere":"Não Confere");
+    $(`#s${i}`).className="status ok";
+    btn.classList.add("active");
+    btn.parentElement.querySelector(`.btn.${ok?"nao":"conf"}`).classList.remove("active");
+  }catch(e){$(`#s${i}`).textContent="Erro ao salvar";$(`#s${i}`).className="status err";}
   checkReady();
 });
 
-/* Finalizar */
-$("#finalizar").onclick = async ()=>{
-  if(!results.every(v=>v!==null)) return;
-
-  const respostas = itens.map((it,i)=>({
-    item: it.descricao,
-    status: results[i] ? "Confere" : "Não Confere",
-    motivo: results[i] ? "" : (motivos[i]||"")
-  }));
-  const body = { action:"finalize", responsavel: localStorage.getItem(LS_USER), respostas };
-  const b = $("#finalizar"); b.textContent = "Enviando...";
+$("#finalizar").onclick=async()=>{
+  if(!results.every(v=>v!==null))return;
+  const resp=localStorage.getItem(LS_USER);
+  const respostas=itens.map((it,i)=>({item:it.descricao,status:results[i]?"Confere":"Não Confere",motivo:results[i]?"":(motivos[i]||"")}));
+  const b=$("#finalizar");b.textContent="Enviando...";
   try{
-    const r = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body) });
-    const txt = await r.text();
-    if(!r.ok || txt.startsWith("ERRO")) throw new Error(txt);
-    b.textContent = "Enviado! Limpando…";
-    // recarrega do zero para ver a planilha limpa
-    await carregar(); desenhar(); results = results.map(()=>null); checkReady();
-    b.textContent = "Finalizar e Enviar Resumo";
-  }catch(e){
-    console.error(e); b.textContent = "Falha ao finalizar (tente novamente)";
-    setTimeout(()=> b.textContent="Finalizar e Enviar Resumo", 1500);
-  }
+    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"finalize",responsavel:resp,respostas})});
+    const txt=await r.text();
+    if(!r.ok||txt.startsWith("ERRO"))throw new Error(txt);
+    b.textContent="Enviado!";setTimeout(()=>location.reload(),1000);
+  }catch(e){b.textContent="Erro ao enviar";setTimeout(()=>b.textContent="Finalizar e Enviar Resumo",1200);}
 };
 
-/* start */
 async function start(){
-  $("#resp").textContent = "Responsável: " + localStorage.getItem(LS_USER);
-  await carregar(); desenhar(); checkReady();
+  $("#responsavel").textContent="Responsável: "+localStorage.getItem(LS_USER);
+  await carregar();
 }
 
-/* boot */
-if(logged()){ $("#login").style.display="none"; start(); }
+// boot
+if(localStorage.getItem(LS_USER)&&localStorage.getItem(LS_PASS)){$("#login").style.display="none";start();}
 </script>
 </body>
 </html>
