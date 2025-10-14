@@ -1,338 +1,228 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Check List Gerencial Diário</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b1220;--panel:#111a2b;--ink:#e6eef8;--muted:#9aa6b2;--line:#1e2a3f;
-  --accent:#06b6d4;--green:#16a34a;--red:#ef4444;--warn:#f59e0b;--radius:16px;
-}
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;}
-body{margin:0;background:linear-gradient(180deg,#0a1022,#0b1220);color:var(--ink);}
-.container{max-width:920px;margin:0 auto;padding:14px;}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-h1{margin:8px 0 10px;font-size:22px;color:var(--accent);font-family:Orbitron,sans-serif;letter-spacing:.5px;text-shadow:0 0 10px #06b6d477;}
-.userbox{font-size:12px;color:var(--muted);}
-.userbox button{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:10px;margin-left:8px}
-#responsavelTag{display:inline-block;background:#0e1a30;border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:#cde6ff;font-size:12px}
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#0ea5e9; --green:#16a34a; --red:#ef4444;
+  }
+  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--ink)}
+  header{max-width:880px;margin:16px auto 8px;padding:0 12px;display:flex;align-items:center;justify-content:space-between}
+  h1{margin:0;font-size:18px;color:#0b4a6f}
+  .badge{font-size:12px;color:var(--muted)}
+  .user{font-size:12px;color:var(--muted)}
+  .user button{margin-left:8px;padding:6px 10px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer}
 
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin:10px 0;box-shadow:0 8px 20px rgba(0,0,0,.25)}
-.item-title{font-weight:600;font-size:15px;margin-bottom:12px}
-.options{display:flex;gap:10px}
-.btn{
-  position:relative;flex:1;padding:12px 14px;border:none;border-radius:14px;color:#fff;
-  font-weight:700;cursor:pointer;overflow:hidden;isolation:isolate;
-}
-.btn::after{
-  content:"";position:absolute;inset:0;z-index:-1;transform:scaleX(var(--fill,0));transform-origin:left;
-  transition:transform .45s ease;
-}
-.btn.confere{background:rgba(22,163,74,.25);border:1px solid rgba(22,163,74,.35)}
-.btn.confere::after{background:var(--green)}
-.btn.nao{background:rgba(239,68,68,.25);border:1px solid rgba(239,68,68,.35)}
-.btn.nao::after{background:var(--red)}
-.btn.active{outline:3px solid #0ea5bacc}
+  .wrap{max-width:880px;margin:0 auto;padding:12px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px;margin:10px 0
+  }
+  .title{font-weight:600;margin-bottom:10px}
+  .row{display:flex;gap:8px}
+  .btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);cursor:pointer;font-weight:600}
+  .btn.conf{background:#e6f6ea;border-color:#c7e7ce;color:#064e2e}
+  .btn.nc{background:#fde8e8;border-color:#f5c2c2;color:#7f1d1d}
+  .btn.active{outline:2px solid var(--accent)}
+  .status{margin-top:8px;font-size:12px;color:var(--muted)}
+  .status.ok{color:#0a7a33}
+  .status.err{color:#b91c1c}
 
-.sync{margin-top:8px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.sync.ok{color:#9ae6b4}
-.sync.err{color:#fecaca}
-
-#finalizar{
-  width:100%;padding:16px;border:none;border-radius:16px;margin:12px 0 4px;
-  background:var(--accent);color:#00121a;font-weight:900;font-size:16px;cursor:not-allowed;opacity:.5;position:relative;overflow:hidden;isolation:isolate;
-}
-#finalizar.ready{cursor:pointer;opacity:1}
-#finalizar::after{
-  content:"";position:absolute;inset:0;transform:scaleX(var(--prog,0));transform-origin:left;transition:transform .9s ease;
-  background:var(--accent);
-}
-#finalizar.ok::after{background:var(--green)}
-#finalizar.bad::after{background:var(--red)}
-#finalizar span{position:relative;z-index:1}
-
-.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;margin-left:6px;border:1px solid var(--line);color:#cbd5e1}
-
-footer{margin:10px 0 20px;text-align:center;color:var(--muted);font-size:12px}
-
-/* Login modal */
-#login{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;
-}
-.box{
-  width:min(92vw,420px);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
-  box-shadow:0 20px 40px rgba(0,0,0,.45)
-}
-.box h2{margin:6px 0 12px;font-size:18px;color:#d6efff}
-.input{width:100%;padding:12px 13px;border:1px solid var(--line);background:#0c1730;color:#e8f2ff;border-radius:12px;margin:8px 0}
-#loginBtn{width:100%;padding:12px;border:none;border-radius:12px;background:var(--accent);font-weight:800}
-.err{color:#fecaca;font-size:12px;min-height:16px}
-
-/* Motivo modal */
-#motivoWrap{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:9998}
-.modal{width:min(92vw,520px);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
-.modal h3{margin:6px 0 10px}
-textarea{width:100%;min-height:110px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0c1730;color:#e8f2ff}
-.modal .actions{display:flex;gap:10px;margin-top:10px}
-.modal .actions button{flex:1;padding:10px;border:none;border-radius:12px;color:#fff;font-weight:700}
-#motivoCancelar{background:#6b7280}
-#motivoSalvar{background:var(--red)}
-
-/* toast */
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0e1b34;border:1px solid #1f2b44;color:#dbeafe;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none;z-index:99999}
+  #finalizar{
+    width:100%;max-width:880px;margin:10px auto 20px;display:block;
+    padding:12px;border:none;border-radius:12px;background:var(--accent);color:#fff;
+    font-weight:800;cursor:not-allowed;opacity:.5
+  }
+  #finalizar.ready{cursor:pointer;opacity:1}
+  /* Login simples */
+  #login{position:fixed;inset:0;background:#00000022;display:flex;align-items:center;justify-content:center}
+  .box{width:min(92vw,420px);background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+  .box h2{margin:0 0 10px}
+  .inp{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+  .ok{color:#0a7a33}
+  .err{color:#b91c1c}
 </style>
 </head>
 <body>
-  <div id="login">
-    <div class="box">
-      <h2>Entrar no Check List</h2>
-      <input id="user" class="input" placeholder="Usuário" autocomplete="username">
-      <input id="pass" class="input" placeholder="Senha" type="password" autocomplete="current-password">
-      <button id="loginBtn">Entrar</button>
-      <div class="err" id="loginErr"></div>
-      <div style="color:var(--muted);font-size:12px;margin-top:6px">O login é salvo neste dispositivo. O nome do usuário será registrado como <b>Responsável</b>.</div>
+
+<!-- Login -->
+<div id="login">
+  <div class="box">
+    <h2>Entrar</h2>
+    <input id="user" class="inp" placeholder="Usuário">
+    <input id="pass" class="inp" placeholder="Senha" type="password">
+    <button id="go" class="btn" style="width:100%;background:var(--accent);color:#fff;border:none">Acessar</button>
+    <div id="msg" class="muted" style="margin-top:6px;font-size:12px;color:var(--muted)">
+      A senha ficará salva neste dispositivo. Ao sair, somente a mesma senha permitirá voltar.
     </div>
   </div>
+</div>
 
-  <div class="container" id="app" style="display:none">
-    <header>
-      <h1>Check List Diário <span id="dia" class="badge"></span></h1>
-      <div class="userbox">
-        <span id="responsavelTag"></span>
-        <button id="logout">Sair</button>
-      </div>
-    </header>
-
-    <div id="checklist"></div>
-
-    <button id="finalizar"><span>Finalizar e Enviar Resumo</span></button>
-    <div class="toast" id="toast">pronto!</div>
-    <footer>© Mercatto Gestão</footer>
+<header>
+  <div>
+    <h1>Check List Gerencial Diário</h1>
+    <div class="badge" id="hoje"></div>
   </div>
-
-  <!-- Motivo "Não Confere" -->
-  <div id="motivoWrap">
-    <div class="modal">
-      <h3>Motivo – <span id="motivoItemTitulo"></span></h3>
-      <textarea id="motivoTexto" placeholder="Descreva o problema, pendência, ação corretiva, responsável..."></textarea>
-      <div class="actions">
-        <button id="motivoCancelar">Cancelar</button>
-        <button id="motivoSalvar">Salvar motivo</button>
-      </div>
-    </div>
+  <div class="user">
+    <span id="resp"></span>
+    <button id="logout">Sair</button>
   </div>
+</header>
+
+<div class="wrap" id="list">Carregando…</div>
+<button id="finalizar">Finalizar e Enviar Resumo</button>
 
 <script>
-/* ========= CONFIG ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbxxy1ow9haS6WQKh-8N4jt6qPUIpzDFda_tqFEsR_YJuaw9XOSgEQkwmX62jf0eSdYY/exec"; // <— SUBSTITUA PELO SEU URL
-/* ========================= */
+/* === CONFIG === */
+const API_URL = "https://script.google.com/macros/s/AKfycbxxy1ow9haS6WQKh-8N4jt6qPUIpzDFda_tqFEsR_YJuaw9XOSgEQkwmX62jf0eSdYY/exec"; // ex: https://script.google.com/macros/s/XXXXX/exec
+/* ============== */
 
-// Estado
-let items = [];           // [{numero, descricao, status, motivo?}]
-let results = [];         // true=confere / false=NC / null=pendente
-let motivos = {};         // idx -> texto
-let pendingNAIdx = null;  // para saber em qual item abrir modal
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
 
-/* ======== Utils ======== */
-const q = s => document.querySelector(s);
-const toast = (msg)=>{ const t=q('#toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2000); };
-const dayBadge = ()=>{ const d=new Date(); return d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'}); };
-const getUser = ()=> localStorage.getItem('cl_user') || '';
-const setUser = (u)=> localStorage.setItem('cl_user', u);
-const clearUser = ()=> localStorage.removeItem('cl_user');
+/* Login local simples (mesma senha obrigatória depois) */
+const LS_USER = "cl_user";
+const LS_PASS = "cl_pass";
 
-/* ======== Login ======== */
-function initLogin(){
-  const saved = getUser();
-  if(saved){
-    q('#login').style.display='none';
-    q('#app').style.display='';
-    q('#responsavelTag').textContent = 'Responsável: ' + saved;
-    loadData();
-  }else{
-    q('#login').style.display='flex';
-    q('#app').style.display='none';
-  }
-  q('#dia').textContent = dayBadge();
+function logged(){
+  const u = localStorage.getItem(LS_USER);
+  const p = localStorage.getItem(LS_PASS);
+  return !!(u && p);
 }
-q('#loginBtn').addEventListener('click', ()=>{
-  const u = q('#user').value.trim();
-  const p = q('#pass').value.trim();
-  if(!u || !p){ q('#loginErr').textContent = 'Informe usuário e senha.'; return; }
-  // validação local simples (se quiser validar no GAS, me peça o Code.gs)
-  setUser(u);
-  q('#login').style.display='none';
-  q('#app').style.display='';
-  q('#responsavelTag').textContent = 'Responsável: ' + u;
-  loadData();
-});
-q('#logout').addEventListener('click', ()=>{ clearUser(); location.reload(); });
-
-/* ======== Carregar itens ======== */
-async function loadData(){
-  try{
-    const r = await fetch(API_URL+'?action=get');
-    const data = await r.json();
-    items = (data.itens||[]).map(x=>({
-      numero: x.numero ?? '',
-      descricao: x.descricao ?? (typeof x==='string'?x:''),
-      status: x.status || '',
-      motivo: x.motivo || ''
-    }));
-    render();
-  }catch(e){
-    toast('Erro ao carregar itens'); console.error(e);
-  }
-}
-
-/* ======== Render ======== */
-function render(){
-  const wrap = q('#checklist'); wrap.innerHTML='';
-  results = items.map(it => it.status === 'Confere' ? true : (it.status === 'Não Confere' ? false : null));
-  motivos = {}; items.forEach((it,i)=>{ if(it.motivo) motivos[i]=it.motivo; });
-
-  items.forEach((it,i)=>{
-    const card = document.createElement('div'); card.className='card';
-    const title = document.createElement('div'); title.className='item-title';
-    title.textContent = `${(i+1)}. ${it.descricao}`;
-    const ops = document.createElement('div'); ops.className='options';
-
-    const bC = document.createElement('button'); bC.className='btn confere'; bC.textContent='Confere';
-    const bN = document.createElement('button'); bN.className='btn nao'; bN.textContent='Não Confere';
-    if(results[i]===true) bC.classList.add('active');
-    if(results[i]===false) bN.classList.add('active');
-
-    // fill visual quando marcar
-    const animateFill = (btn)=>{ btn.style.setProperty('--fill','1'); setTimeout(()=>btn.style.removeProperty('--fill'),500); };
-
-    bC.onclick = async ()=>{
-      await marcarItem(i,true);
-      bC.classList.add('active'); bN.classList.remove('active'); animateFill(bC);
-      updateSyncRow(card,true);
-      checkReady();
-    };
-    bN.onclick = ()=>{
-      pendingNAIdx = i;
-      q('#motivoItemTitulo').textContent = it.descricao;
-      q('#motivoTexto').value = motivos[i] || '';
-      q('#motivoWrap').style.display='flex';
-    };
-
-    ops.append(bC,bN);
-    const sync = document.createElement('div'); sync.className='sync'; sync.textContent = it.status ? `Sincronizado: ${it.status}` : 'Pendente';
-    if(it.status) sync.classList.add('ok');
-
-    card.append(title,ops,sync);
-    wrap.append(card);
-  });
-
-  checkReady();
-}
-
-/* ======== Atualiza status de um item no GAS ======== */
-async function marcarItem(index, ok, motivoText=''){
-  const usuario = getUser();
-  const payload = {
-    action: 'mark',
-    index,                                   // índice do item na planilha (considerando cabeçalho no GAS)
-    status: ok ? 'Confere' : 'Não Confere',
-    motivo: ok ? '' : motivoText,
-    responsavel: usuario
-  };
-
-  // visual: botão progress fill na opção escolhida
-  try{
-    const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
-    const txt = await res.text();
-    if(!res.ok){ throw new Error(txt||'Erro'); }
-    results[index] = ok;
-    if(!ok && motivoText) motivos[index] = motivoText;
-    return true;
-  }catch(e){
-    console.error(e); toast('Falha ao salvar na planilha');
+function doLogin(u,p){
+  const savedU = localStorage.getItem(LS_USER);
+  const savedP = localStorage.getItem(LS_PASS);
+  if(savedU || savedP){
+    if(u===savedU && p===savedP){ return true; }
+    $("#msg").textContent = "Senha diferente da primeira usada neste dispositivo.";
+    $("#msg").className = "err";
     return false;
+  }else{
+    localStorage.setItem(LS_USER,u);
+    localStorage.setItem(LS_PASS,p);
+    return true;
   }
 }
 
-function updateSyncRow(card, ok){
-  const s = card.querySelector('.sync');
-  if(!s) return;
-  s.classList.remove('err'); s.classList.add('ok');
-  s.textContent = ok ? 'Sincronizado: Confere' : 'Sincronizado: Não confere';
+$("#go").onclick = ()=>{
+  const u=$("#user").value.trim(); const p=$("#pass").value.trim();
+  if(!u || !p){ $("#msg").textContent="Informe usuário e senha."; $("#msg").className="err"; return; }
+  if(doLogin(u,p)){ $("#login").style.display="none"; start(); }
+};
+$("#logout").onclick = ()=>{ localStorage.removeItem(LS_USER); localStorage.removeItem(LS_PASS); location.reload(); };
+
+/* Data topo */
+$("#hoje").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"});
+
+/* Estado */
+let itens = [];      // {numero,descricao,status,motivo}
+let results = [];    // true/false/null
+let motivos = {};    // idx -> texto
+
+async function carregar(){
+  const r = await fetch(API_URL+"?action=get");
+  const data = await r.json();
+  itens = (data.itens||[]).map(x=>({
+    numero:x.numero, descricao:x.descricao, status:x.status||"", motivo:x.motivo||""
+  }));
+  results = itens.map(it => it.status==="Confere" ? true : (it.status==="Não Confere" ? false : null));
 }
 
-/* ======== Modal motivo ======== */
-q('#motivoCancelar').onclick = ()=>{ q('#motivoWrap').style.display='none'; pendingNAIdx=null; };
-q('#motivoSalvar').onclick = async ()=>{
-  const txt = q('#motivoTexto').value.trim();
-  if(!txt){ alert('Digite o motivo.'); return; }
-  const idx = pendingNAIdx;
-  q('#motivoWrap').style.display='none';
-  pendingNAIdx=null;
+function desenhar(){
+  const c = $("#list"); c.innerHTML="";
+  itens.forEach((it,i)=>{
+    const card = document.createElement("div"); card.className="card";
+    card.innerHTML = `
+      <div class="title">${i+1}. ${it.descricao}</div>
+      <div class="row">
+        <button class="btn conf ${results[i]===true?'active':''}" data-i="${i}" data-ok="1">Confere</button>
+        <button class="btn nc ${results[i]===false?'active':''}" data-i="${i}" data-ok="0">Não confere</button>
+      </div>
+      <div class="status ${it.status?'ok':''}" id="s${i}">${it.status?('Sincronizado: '+it.status):'Pendente'}</div>
+    `;
+    c.appendChild(card);
+  });
+}
 
-  // salva no GAS
-  const ok = await marcarItem(idx,false,txt);
-  if(ok){
-    // marca visualmente
-    const card = qAll('.card')[idx];
-    card.querySelector('.btn.nao').classList.add('active');
-    card.querySelector('.btn.confere').classList.remove('active');
-    card.querySelector('.sync').classList.add('ok');
-    card.querySelector('.sync').textContent = 'Sincronizado: Não confere';
-    // efeito de preenchimento vermelho
-    card.querySelector('.btn.nao').style.setProperty('--fill','1');
-    setTimeout(()=>card.querySelector('.btn.nao').style.removeProperty('--fill'),500);
-    checkReady();
+function checkReady(){
+  const ready = results.every(v=>v!==null) && logged();
+  const b = $("#finalizar");
+  if(ready){ b.classList.add("ready"); b.disabled=false; }
+  else{ b.classList.remove("ready"); b.disabled=true; }
+}
+
+/* marca 1 item no GAS */
+async function marcar(index, ok, motivo=""){
+  const payload = { action:"mark", index, status: ok?"Confere":"Não Confere", motivo, responsavel: localStorage.getItem(LS_USER) };
+  const res = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+  const txt = await res.text();
+  if(!res.ok || txt.startsWith("ERRO")) throw new Error(txt);
+}
+
+document.addEventListener("click", async (ev)=>{
+  const btn = ev.target.closest(".btn"); if(!btn) return;
+  const i = Number(btn.dataset.i); const ok = btn.dataset.ok==="1";
+  let motivo = "";
+  if(!ok){
+    motivo = prompt("Motivo do 'Não confere':") || "";
+    if(!motivo.trim()) return;
+  }
+  // feedback imediato
+  btn.classList.add("active");
+  const sib = btn.parentElement.querySelector(`.btn.${ok?'nc':'conf'}`); sib.classList.remove("active");
+
+  try{
+    await marcar(i, ok, motivo);
+    results[i] = ok;
+    if(!ok) motivos[i] = motivo;
+    const st = document.getElementById("s"+i);
+    st.textContent = "Sincronizado: " + (ok?"Confere":"Não confere");
+    st.classList.add("ok"); st.classList.remove("err");
+  }catch(e){
+    const st = document.getElementById("s"+i);
+    st.textContent = "Erro ao salvar"; st.classList.add("err");
+    console.error(e);
+  }
+  checkReady();
+});
+
+/* Finalizar */
+$("#finalizar").onclick = async ()=>{
+  if(!results.every(v=>v!==null)) return;
+
+  const respostas = itens.map((it,i)=>({
+    item: it.descricao,
+    status: results[i] ? "Confere" : "Não Confere",
+    motivo: results[i] ? "" : (motivos[i]||"")
+  }));
+  const body = { action:"finalize", responsavel: localStorage.getItem(LS_USER), respostas };
+  const b = $("#finalizar"); b.textContent = "Enviando...";
+  try{
+    const r = await fetch(API_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body) });
+    const txt = await r.text();
+    if(!r.ok || txt.startsWith("ERRO")) throw new Error(txt);
+    b.textContent = "Enviado! Limpando…";
+    // recarrega do zero para ver a planilha limpa
+    await carregar(); desenhar(); results = results.map(()=>null); checkReady();
+    b.textContent = "Finalizar e Enviar Resumo";
+  }catch(e){
+    console.error(e); b.textContent = "Falha ao finalizar (tente novamente)";
+    setTimeout(()=> b.textContent="Finalizar e Enviar Resumo", 1500);
   }
 };
-const qAll = s => Array.from(document.querySelectorAll(s));
 
-/* ======== Checar se pode finalizar ======== */
-function checkReady(){
-  const ready = results.every(v => v!==null) && !!getUser();
-  const btn = q('#finalizar');
-  if(ready){ btn.classList.add('ready'); btn.style.setProperty('--prog','0'); btn.disabled=false; btn.style.opacity='1'; }
-  else{ btn.classList.remove('ready'); btn.disabled=true; btn.style.opacity='.5'; }
+/* start */
+async function start(){
+  $("#resp").textContent = "Responsável: " + localStorage.getItem(LS_USER);
+  await carregar(); desenhar(); checkReady();
 }
 
-/* ======== Finalizar ======== */
-q('#finalizar').addEventListener('click', async ()=>{
-  if(!results.every(v=>v!==null)){ toast('Preencha todos os itens'); return; }
-
-  const usuario = getUser();
-  const respostas = items.map((it,i)=>({
-    item: it.descricao,
-    status: results[i] ? 'Confere' : 'Não Confere',
-    motivo: results[i] ? '' : (motivos[i]||'')
-  }));
-
-  // animação de preenchimento no botão (verde se tudo confere, vermelho se existe NC)
-  const hasNC = respostas.some(r=>r.status==='Não Confere');
-  const btn = q('#finalizar');
-  btn.classList.toggle('ok', !hasNC);
-  btn.classList.toggle('bad', hasNC);
-  btn.style.setProperty('--prog','1');
-
-  try{
-    const r = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'finalize', responsavel:usuario, respostas })
-    });
-    const txt = await r.text();
-    if(!r.ok) throw new Error(txt||'Erro');
-    toast('Resumo enviado e planilha resetada!');
-    setTimeout(()=>location.reload(),1200);
-  }catch(e){
-    console.error(e);
-    toast('Erro ao finalizar');
-    // reverte animação
-    setTimeout(()=>btn.style.setProperty('--prog','0'),400);
-  }
-});
-
-/* ======== Start ======== */
-document.addEventListener('DOMContentLoaded', initLogin);
+/* boot */
+if(logged()){ $("#login").style.display="none"; start(); }
 </script>
 </body>
 </html>
