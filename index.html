@@ -4,76 +4,92 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Check List Gerencial Diário</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0e172a;--card:#1e293b;--accent:#06b6d4;--green:#16a34a;--red:#ef4444;
-  --text:#e2e8f0;--muted:#94a3b8;--radius:12px;
+  --bg:#0b1220;
+  --panel:#111a2b;
+  --accent:#06b6d4;
+  --green:#16a34a;
+  --red:#ef4444;
+  --white:#f1f5f9;
+  --muted:#9ca3af;
+  --radius:14px;
 }
-*{box-sizing:border-box;font-family:Inter,sans-serif;}
-body{margin:0;background:var(--bg);color:var(--text);padding:10px;}
-h1{text-align:center;color:var(--accent);margin:10px 0;}
+*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif;}
+body{margin:0;background:var(--bg);color:var(--white);padding:12px;}
+h1{
+  text-align:center;margin:0 0 15px;font-size:22px;
+  font-family:Orbitron,sans-serif;color:var(--accent);text-shadow:0 0 10px #06b6d499;
+}
+#responsavel{
+  width:100%;padding:12px;border:none;border-radius:var(--radius);
+  margin-bottom:15px;font-size:15px;
+  background:var(--panel);color:var(--white);
+}
 .card{
-  background:var(--card);padding:15px;border-radius:var(--radius);
-  margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,.3);
+  background:var(--panel);border-radius:var(--radius);
+  margin-bottom:10px;padding:15px;box-shadow:0 4px 8px rgba(0,0,0,.3);
+  transition:transform .2s;
 }
-label{font-weight:600;font-size:15px;}
-.options{display:flex;gap:10px;margin-top:8px;}
+.card:hover{transform:scale(1.02);}
+.item-title{font-weight:600;font-size:15px;margin-bottom:10px;color:var(--white);}
+.options{display:flex;gap:10px;}
 .options button{
-  flex:1;padding:10px;border:none;border-radius:var(--radius);
-  color:#fff;font-weight:600;font-size:14px;cursor:pointer;
+  flex:1;padding:12px;border:none;border-radius:var(--radius);
+  font-weight:600;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;
 }
 .confere{background:var(--green);}
 .nao-confere{background:var(--red);}
 .options button.active{outline:3px solid var(--accent);}
-#responsavel{
-  width:100%;padding:12px;border:none;border-radius:var(--radius);
-  margin:10px 0;font-size:15px;
-}
 #send{
-  background:var(--accent);width:100%;padding:14px;font-size:16px;font-weight:700;
-  color:#fff;border:none;border-radius:var(--radius);margin-top:10px;
+  background:var(--accent);border:none;width:100%;padding:14px;
+  border-radius:var(--radius);font-size:16px;font-weight:700;
+  color:#fff;margin-top:10px;cursor:pointer;transition:.3s;
 }
-#send:disabled{opacity:.4;}
+#send:disabled{opacity:.4;cursor:not-allowed;}
 .overlay{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;
   z-index:999;color:#fff;font-size:18px;font-weight:600;
 }
-footer{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;}
+footer{text-align:center;color:var(--muted);margin-top:20px;font-size:12px;}
 </style>
 </head>
 <body>
   <h1>Check List Diário</h1>
-  <input id="responsavel" placeholder="Responsável pela conferência" />
+  <input id="responsavel" placeholder="Responsável pela conferência" autocomplete="off">
   <div id="checklist">Carregando itens...</div>
-  <button id="send" disabled>Enviar Check List</button>
-
+  <button id="send" disabled>Finalizar Check List</button>
   <div class="overlay" id="overlay">Enviando...</div>
-  <footer>© Gestão Mercatto</footer>
+  <footer>© Mercatto Gestão</footer>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxqVtrtnoASGjXt61YzcUfdRV-mBABeRZ38XNDGLd7s1plDG3-o8TtyCpWyiROef6gV/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxqVtrtnoASGjXt61YzcUfdRV-mBABeRZ38XNDGLd7s1plDG3-o8TtyCpWyiROef6gV/exec"; // substitua seu ID
+
 let items = [];
 let results = [];
 
-// 🔹 Carrega itens da planilha
+// 🔹 Carregar itens da planilha
 async function carregarItens(){
-  const res = await fetch(API_URL+"?action=get");
+  const res = await fetch(API_URL + "?action=get");
   const data = await res.json();
   items = data.itens;
   render();
 }
 
+// 🔹 Renderizar lista
 function render(){
   const container=document.getElementById("checklist");
   container.innerHTML="";
   results = Array(items.length).fill(null);
+
   items.forEach((it,i)=>{
+    const descricao = it.descricao || it; // caso seja string simples
     const div=document.createElement("div");
     div.className="card";
     div.innerHTML=`
-      <label>${i+1}. ${it}</label>
+      <div class="item-title">${i+1}. ${descricao}</div>
       <div class="options">
         <button class="confere" onclick="mark(${i},true)">Confere</button>
         <button class="nao-confere" onclick="mark(${i},false)">Não Confere</button>
@@ -88,35 +104,40 @@ function mark(index,value){
   const buttons=document.querySelectorAll(".card")[index].querySelectorAll("button");
   buttons.forEach(btn=>btn.classList.remove("active"));
   buttons[value?0:1].classList.add("active");
-  document.getElementById("send").disabled = results.includes(null) || !document.getElementById("responsavel").value.trim();
+  checkFormReady();
 }
 
-document.getElementById("responsavel").addEventListener("input",()=>{
-  document.getElementById("send").disabled = results.includes(null) || !document.getElementById("responsavel").value.trim();
-});
+function checkFormReady(){
+  const nome=document.getElementById("responsavel").value.trim();
+  document.getElementById("send").disabled = results.includes(null) || !nome;
+}
 
-// 🔹 Enviar checklist
+document.getElementById("responsavel").addEventListener("input",checkFormReady);
+
+// 🔹 Enviar respostas
 document.getElementById("send").addEventListener("click",async()=>{
   const overlay=document.getElementById("overlay");
   overlay.style.display="flex";
-  const payload = {
-    action: "save",
-    responsavel: document.getElementById("responsavel").value,
-    respostas: items.map((it,i)=>({item:it,status:results[i]?"Confere":"Não Confere"}))
+  const payload={
+    responsavel:document.getElementById("responsavel").value,
+    respostas:items.map((it,i)=>({
+      item:it.descricao || it,
+      status:results[i]?"Confere":"Não Confere"
+    }))
   };
 
-  try {
-    const res = await fetch(API_URL,{
+  try{
+    const res=await fetch(API_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify(payload)
     });
-    const msg = await res.text();
-    overlay.innerText="✅ Enviado e resetado!";
+    const msg=await res.text();
+    overlay.innerText="✅ Enviado e salvo!";
     setTimeout(()=>location.reload(),2000);
-  } catch(e){
-    console.error(e);
+  }catch(e){
     overlay.innerText="❌ Erro ao enviar!";
+    console.error(e);
     setTimeout(()=>overlay.style.display="none",3000);
   }
 });
