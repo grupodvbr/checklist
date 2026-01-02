@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>🧭 Painel de Gerência</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --bg:#0b0f19;--card:#131b2b;--accent:#ff8f1f;--accent2:#ffb347;
@@ -58,12 +60,17 @@ h2{margin-top:0;color:var(--accent2);font-weight:600;}
 }
 </style>
 </head>
+
 <body>
+
 <header>🧭 Painel de Gerência - Grupo Delícia & Mercatto</header>
+
 <main>
+
   <!-- LOGIN -->
   <div class="section fadeIn" id="loginBox">
     <h2>Identificação</h2>
+
     <select id="usuarioSelect" class="select">
       <option value="">Selecione o gerente</option>
       <option>MERCATTO_DHEURE</option>
@@ -74,6 +81,7 @@ h2{margin-top:0;color:var(--accent2);font-weight:600;}
       <option>DELICIA_RUAN</option>
       <option>DELICIA_VALCIR</option>
     </select>
+
     <input id="senha" type="password" class="input" placeholder="Senha de acesso">
     <button class="btn" onclick="login()">Entrar</button>
     <div class="error" id="loginMsg"></div>
@@ -82,6 +90,7 @@ h2{margin-top:0;color:var(--accent2);font-weight:600;}
   <!-- HOME -->
   <div class="section fadeIn" id="homeBox" style="display:none">
     <h2 id="empresaNome"></h2>
+
     <div class="cards">
       <div class="card" onclick="abrir('checklist.html')">
         <h3>✅ Check-list</h3><p>Tarefas diárias</p>
@@ -95,97 +104,112 @@ h2{margin-top:0;color:var(--accent2);font-weight:600;}
       <div class="card" onclick="abrir('reservas.html')">
         <h3>📅 Reservas</h3><p>Controle de reservas</p>
       </div>
-        <div class="card" onclick="abrir('aniversarios.html')">
-        <h3>👍🏻 Aprovação de reservas</h3><p>Aprovação de reservas em geral</p>
+      <div class="card" onclick="abrir('aniversarios.html')">
+        <h3>👍🏻 Aprovação de reservas</h3><p>Aprovação geral</p>
       </div>
-         <div class="card" onclick="abrir('curriculos.html')">
+      <div class="card" onclick="abrir('curriculos.html')">
         <h3>📘 Currículos</h3><p>Currículos recebidos</p>
       </div>
       <div class="card" onclick="abrir('links.html')">
         <h3>🌐 Acessos</h3><p>Painéis úteis</p>
       </div>
     </div>
+
     <button class="btn" style="margin-top:20px" onclick="logout()">Sair</button>
   </div>
+
 </main>
+
 <div class="toast" id="toast"></div>
 
-<script>
-const LOGIN_URL='https://gerentes.clena.com.br/api/login';
-const $=s=>document.querySelector(s);
+<!-- SUPABASE -->
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-/* ✅ AUTOLOGIN SE TIVER CACHE */
-window.addEventListener('load',()=>{
-  const usuario=localStorage.getItem('usuario');
-  const empresa=localStorage.getItem('empresa');
-  const gerente=localStorage.getItem('gerente');
-  if(usuario&&empresa&&gerente){
-    $('#loginBox').style.display='none';
-    $('#homeBox').style.display='block';
-    $('#empresaNome').textContent=`${empresa} • ${gerente}`;
-    toast('👋 Bem-vindo de volta, '+gerente+'!');
-  }
+/* 🔐 CONFIG */
+const SUPABASE_URL = "https://SEU-PROJETO.supabase.co";
+const SUPABASE_ANON_KEY = "SUA-CHAVE-ANON";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+
+/* 🔁 AUTOLOGIN */
+window.addEventListener("load", async () => {
+  const { data:{ session } } = await supabase.auth.getSession();
+  if(session) carregarPerfil(session.user.id);
 });
 
-/* LOGIN NORMAL */
+/* 🔐 LOGIN */
 async function login(){
-  const usuario=$('#usuarioSelect').value.trim();
-  const senha=$('#senha').value.trim();
-  const msg=$('#loginMsg');
-  if(!usuario||!senha){msg.textContent='Preencha todos os campos.';return;}
-  msg.textContent='';
+  const usuario = $("#usuarioSelect").value.trim();
+  const senha = $("#senha").value.trim();
+  const msg = $("#loginMsg");
 
-  try{
-    const res=await fetch(`${LOGIN_URL}?usuario=${usuario}&senha=${senha}`);
-    const data=await res.json();
-
-    if(!data.success){
-      msg.textContent=data.msg||'Usuário ou senha incorretos.';
-      return;
-    }
-
-    // Extrai empresa e nome
-    const partes=usuario.split('_');
-    const empresa=partes[0].toUpperCase();
-    const gerente=partes[1] ? partes[1].charAt(0).toUpperCase()+partes[1].slice(1).toLowerCase() : 'Gerente';
-
-    // Nome de exibição da empresa
-    let empresaNomeDisplay = (empresa==='MERCATTO') ? 'MERCATTO DELÍCIA' : 'DELÍCIA GOURMET';
-    $('#empresaNome').textContent = `${empresaNomeDisplay} • ${gerente}`;
-
-    // Guarda no cache
-    localStorage.setItem('empresa', empresaNomeDisplay);
-    localStorage.setItem('gerente', gerente);
-    localStorage.setItem('usuario', usuario);
-
-    $('#loginBox').style.display='none';
-    $('#homeBox').style.display='block';
-    toast('👋 Bem-vindo, '+gerente+'!');
-  }catch{
-    msg.textContent='Erro de conexão. Tente novamente.';
+  if(!usuario || !senha){
+    msg.textContent = "Preencha todos os campos.";
+    return;
   }
+
+  const email = `${usuario.toLowerCase()}@empresa.com`;
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password: senha
+  });
+
+  if(error){
+    msg.textContent = "Usuário ou senha inválidos.";
+    return;
+  }
+
+  carregarPerfil(data.user.id);
 }
 
-/* ABRIR PÁGINAS */
-function abrir(pagina){window.location.href=pagina;}
+/* 👤 PERFIL */
+async function carregarPerfil(id){
+  const { data, error } = await supabase
+    .from("usuarios")
+    .select("empresa, gerente")
+    .eq("id", id)
+    .single();
 
-/* LOGOUT */
-function logout(){
-  localStorage.clear();
-  $('#homeBox').style.display='none';
-  $('#loginBox').style.display='block';
-  $('#senha').value='';
-  $('#usuarioSelect').value='';
-  toast('Sessão encerrada.');
+  if(error){
+    alert("Perfil não encontrado.");
+    return;
+  }
+
+  $("#empresaNome").textContent = `${data.empresa} • ${data.gerente}`;
+  $("#loginBox").style.display = "none";
+  $("#homeBox").style.display = "block";
+  toast(`👋 Bem-vindo, ${data.gerente}!`);
 }
 
-/* TOAST */
+/* 🚪 LOGOUT */
+async function logout(){
+  await supabase.auth.signOut();
+  $("#homeBox").style.display = "none";
+  $("#loginBox").style.display = "block";
+  $("#senha").value="";
+  $("#usuarioSelect").value="";
+  toast("Sessão encerrada.");
+}
+
+/* 🔗 */
+function abrir(p){ window.location.href = p; }
+
+/* 🔔 */
 function toast(msg){
-  const el=$('#toast');
+  const el=$("#toast");
   el.textContent=msg;
-  el.style.display='block';
-  setTimeout(()=>el.style.display='none',2500);
+  el.style.display="block";
+  setTimeout(()=>el.style.display="none",2500);
 }
+
+/* expõe */
+window.login = login;
+window.logout = logout;
+window.abrir = abrir;
 </script>
+
 </body>
 </html>
